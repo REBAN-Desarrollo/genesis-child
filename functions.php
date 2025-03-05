@@ -348,6 +348,30 @@ function custom_author_box_title() {
 		return get_the_author();
 }
 
+// Agregar etiquetas accesibles a los campos de formulario
+function okchicas_add_form_labels($form) {
+    // Mejorar accesibilidad de formulario de búsqueda
+    $form = str_replace(
+        '<input type="text" value="" name="s" class="search-input" placeholder="Buscar en el sitio" />',
+        '<label for="search-input">Buscar: <input id="search-input" type="text" value="" name="s" class="search-input" placeholder="Buscar en el sitio" /></label>',
+        $form
+    );
+    return $form;
+}
+add_filter('get_search_form', 'okchicas_add_form_labels');
+
+// Mejorar los formularios de radio y checkbox
+function okchicas_fix_radio_checkbox_labels($content) {
+    // Patrones para identificar inputs sin etiquetas
+    $patterns = [
+        '/<input class="radio" name="radio_button" type="radio" value="([^"]+)">/i' => '<label><input class="radio" name="radio_button" type="radio" value="$1"> Opción $1</label>',
+        '/<input class="checkbox" name="checkboxes" type="checkbox" value="([^"]+)">/i' => '<label><input class="checkbox" name="checkboxes" type="checkbox" value="$1"> Opción $1</label>'
+    ];
+    
+    return preg_replace(array_keys($patterns), array_values($patterns), $content);
+}
+add_filter('the_content', 'okchicas_fix_radio_checkbox_labels');
+
 add_filter( 'genesis_author_box', 'be_author_box', 10, 6 );
 /**
  * Customize Author Box
