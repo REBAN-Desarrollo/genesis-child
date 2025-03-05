@@ -1,8 +1,11 @@
 <?php
 //* Start the engine
 include_once(get_template_directory() . '/lib/init.php');
-//* Set Localization (do not remove)
-load_child_theme_textdomain('mpp', apply_filters('child_theme_textdomain', get_stylesheet_directory() . '/languages', 'mpp'));
+//* Set Localization properly using init hook
+function mpp_load_textdomain() {
+    load_child_theme_textdomain('mpp', apply_filters('child_theme_textdomain', get_stylesheet_directory() . '/languages', 'mpp'));
+}
+add_action('init', 'mpp_load_textdomain');
 //* Child theme (do not remove)
 define('CHILD_THEME_NAME', __('reban', 'mpp'));
 define('CHILD_THEME_URL', 'http://www.okchicas.com/');
@@ -235,17 +238,21 @@ include('sb-functions.php');
  * @param string $url The script's source URL.
  * @return string $tag The (modified) <script> tag for the enqueued script.
  **/
-function defer_parsing_of_js($tag, $handle, $src) {
-    // Defer WordPress Popular Posts (wpp) script
-    if ( 'wpp-js' == $handle ) {
-        return str_replace(' src', ' async src', $tag);
-    }
-
-    // Return original tag
-    return $tag;
+/**
+ * Añadir 'async' manualmente al script wpp.js usando output buffering
+ */
+add_action('template_redirect', 'add_async_attribute_to_wpp_js', 0);
+function add_async_attribute_to_wpp_js() {
+    ob_start(function($html){
+        // Añadir async al script wpp.js (siempre que exista en el HTML)
+        $html = str_replace(
+            'id="wpp-js" src=',
+            'id="wpp-js" async src=',
+            $html
+        );
+        return $html;
+    });
 }
-add_filter('script_loader_tag', 'defer_parsing_of_js', 10, 3);
-
 
 /* Custom embeds
 	1 - Youtube Videos remove show info related etc
