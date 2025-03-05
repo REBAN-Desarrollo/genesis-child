@@ -16,16 +16,16 @@ function headscripts_singlepost() {
 <?php
 }
 // 2 - Preload featured image to improve Largest Contentful Paint (LCP) - see: https://www.corewebvitals.io/pagespeed/preload-largest-contentful-paint-image
-add_action('wp_head', 'featured_image_preload');
+add_action('wp_head', 'featured_image_preload', 1); // Prioridad 1 para que sea más temprano
 function featured_image_preload() {
     if (is_singular() && has_post_thumbnail()) {
         $thumbnail_id = get_post_thumbnail_id();
         $image_arr = wp_get_attachment_image_src($thumbnail_id, 'large');
-        $img_url = $image_arr[0] ?? ''; // Safely handle potential null value
+        $img_url = $image_arr[0] ?? '';
         $srcset = wp_get_attachment_image_srcset($thumbnail_id);
         
         if ($img_url && $srcset) {
-            echo '<link rel="preload" as="image" href="' . esc_url($img_url) . '" imagesrcset="' . esc_attr($srcset) . '">';
+            echo '<link rel="preload" as="image" href="' . esc_url($img_url) . '" imagesrcset="' . esc_attr($srcset) . '" fetchpriority="high" importance="high">';
         }
     }
 }
@@ -98,20 +98,23 @@ function postcategory() {
                 <?php echo esc_html(get_the_time('F j Y')); ?>
             </time>
         </p>
-        <div class="full-img">
-            <?php 
-            $thumbnail_id = get_post_thumbnail_id();
-            $srcset = [
-                wp_get_attachment_image_url($thumbnail_id, 'medium') . ' 400w',
-                wp_get_attachment_image_url($thumbnail_id, 'portfolio') . ' 520w',
-                wp_get_attachment_image_url($thumbnail_id, 'large') . ' 730w'
-            ];
-            the_post_thumbnail('large', [
-                'class' => 'aligncenter',
-                'srcset' => implode(', ', $srcset)
-            ]); 
-            ?>
-        </div>
+		<div class="full-img">
+			<?php 
+			$thumbnail_id = get_post_thumbnail_id();
+			$srcset = [
+				wp_get_attachment_image_url($thumbnail_id, 'medium') . ' 400w',
+				wp_get_attachment_image_url($thumbnail_id, 'portfolio') . ' 520w',
+				wp_get_attachment_image_url($thumbnail_id, 'large') . ' 730w'
+			];
+			the_post_thumbnail('large', [
+				'class' => 'aligncenter',
+				'srcset' => implode(', ', $srcset),
+				'fetchpriority' => 'high', 
+				'loading' => 'eager', // Override lazy loading for main image
+				'decoding' => 'async'
+			]); 
+			?>
+		</div>
     </div> 
     <?php
 }
