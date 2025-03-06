@@ -1,11 +1,8 @@
 <?php
 //* Start the engine
 include_once(get_template_directory() . '/lib/init.php');
-//* Set Localization properly using init hook
-function mpp_load_textdomain() {
-    load_child_theme_textdomain('mpp', apply_filters('child_theme_textdomain', get_stylesheet_directory() . '/languages', 'mpp'));
-}
-add_action('init', 'mpp_load_textdomain');
+//* Set Localization (do not remove)
+load_child_theme_textdomain('mpp', apply_filters('child_theme_textdomain', get_stylesheet_directory() . '/languages', 'mpp'));
 //* Child theme (do not remove)
 define('CHILD_THEME_NAME', __('reban', 'mpp'));
 define('CHILD_THEME_URL', 'http://www.okchicas.com/');
