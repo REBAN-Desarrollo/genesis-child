@@ -4,7 +4,7 @@ function ok_genesis_meta() {
 
 /* Headers mods
  * 1 - Inline ATF Critical CSS: https://web.dev/extract-critical-css/ | https://jonassebastianohlsson.com/criticalpathcssgenerator/
- * 2 - Preaload featured image
+ * 2 - Preload featured image
  * 3 - Función para agregar una clase a los enlaces de imagenes / Classes to images for full width when width lower than 600px
  * 4 - Remove comment-reply.min.js
  * 5 - YARPP: Remove CSS
