@@ -53,7 +53,6 @@ function cache_buster_styles() {
 			$search = array("rel='stylesheet' id='$handle-css'", "type='text/css' media='all'");
 			$replace = array("rel=\"stylesheet\"", "media=\"print\" onload=\"this.media='all'; this.onload=null;\"");
 			return str_replace($search, $replace, $html)."<noscript>{$html}</noscript>";
-			exit;
 		}
 		return $html;
 	}
@@ -65,7 +64,6 @@ function cache_buster_styles() {
 			$search = array("rel='stylesheet' id='$handle-css'", "type='text/css' media='all'");
 			$replace = array("rel=\"preload\"", "as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\"");
 			return str_replace($search, $replace, $html)."<noscript>{$html}</noscript>";
-			exit;
 		}
 		return $html;
 	}
