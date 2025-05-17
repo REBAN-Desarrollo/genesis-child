@@ -23,7 +23,7 @@ add_theme_support('html5', array(
 function sp_viewport_meta_tag() {
 	echo '<meta name="viewport" content="width=device-width, initial-scale=1.0"/>';
 }
-//* Reposition the secondary navigation menu
+//* Remove the secondary navigation menu
 remove_action('genesis_after_header', 'genesis_do_subnav');
 
 /* Optimize your CSS https://web.dev/fast/#optimize-your-css | STYLE.CSS MODS to optimize delivery
