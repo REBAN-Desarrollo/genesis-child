@@ -98,7 +98,7 @@ function postcategory() {
 
     <div class="header-box">
         <div class="single-post-category">
-            <span><?php echo $categories; ?></span>
+            <span><?php echo wp_kses_post( $categories ); ?></span>
         </div>
         <h1 class="entry-title" itemprop="headline"><?php the_title(); ?></h1>
         <p class="entry-meta">Por 
