@@ -209,24 +209,7 @@ function mpp_after_entry() {
             'after' => '</div>'
         ));
 }	
-
-/* Deshabilitados */ 
-/* Adds our code for Top Billboard below sidebar */
-// add_action('genesis_before_content_sidebar_wrap', 'top_billboard', 2);
-function top_billboard() {
-	if( is_home() || is_singular('post') ){
-		?>
-			<div class="topbillboard"  style="float:none;text-align:center;margin:0;">
-				<!-- /86430479/OkChicas_Top_Billboard -->
-				<div id='div-gpt-ad-1559951983912-0'>
-				<script>
-				googletag.cmd.push(function() { googletag.display('div-gpt-ad-1559951983912-0'); });
-				</script>
-				</div>
-			</div>
-		<?php
-	}
-}
+/* unused ad block removed */
 /* Taboola - Al final de posts */
 //add_action('genesis_before_footer', 'taboola_related_posts');
 function taboola_related_posts() {
