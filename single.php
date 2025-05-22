@@ -57,10 +57,6 @@ function imagenes_full_600px($content) {
 }
 add_filter('the_content', 'imagenes_full_600px');
 // 4 - Remove comment-reply.min.js
-//add_action('wp_enqueue_scripts', 'wdm_enqueue_script');
-function wdm_enqueue_script() {
-    wp_dequeue_script('comment-reply');
-}
 // 5 - YARPP: Remove CSS stylesheets in the header and footer
 add_action('wp_print_styles', 'deregister_yarpp_styles');
 add_action('wp_footer', 'deregister_yarpp_styles');
@@ -208,46 +204,6 @@ function mpp_after_entry() {
             'before' => '<div class="after-entry widget-area">',
             'after' => '</div>'
         ));
-}	
-
-/* Deshabilitados */ 
-/* Adds our code for Top Billboard below sidebar */
-// add_action('genesis_before_content_sidebar_wrap', 'top_billboard', 2);
-function top_billboard() {
-	if( is_home() || is_singular('post') ){
-		?>
-			<div class="topbillboard"  style="float:none;text-align:center;margin:0;">
-				<!-- /86430479/OkChicas_Top_Billboard -->
-				<div id='div-gpt-ad-1559951983912-0'>
-				<script>
-				googletag.cmd.push(function() { googletag.display('div-gpt-ad-1559951983912-0'); });
-				</script>
-				</div>
-			</div>
-		<?php
-	}
-}
-/* Taboola - Al final de posts */
-//add_action('genesis_before_footer', 'taboola_related_posts');
-function taboola_related_posts() {
-	?>   
-		<div class="clearfix"></div>
-		<div class="custom-related-posts">
-				<div class="yarpp-related">
-					<div id="taboola-below-article-thumbnails-1"></div>
-					<script type="text/javascript">
-					window._taboola = window._taboola || [];
-					_taboola.push({
-					mode: 'thumbnails-a',
-					container: 'taboola-below-article-thumbnails-1',
-					placement: 'Below Article Thumbnails 1',
-					target_type: 'mix'
-					});
-					</script>
-				</div>
-		</div>
-		<div class="clearfix"></div>
-	<?php
 }
 	
 }
