@@ -80,83 +80,109 @@ function modify_date_format() {
 // Adds header box - Category, entry-title, entry-meta & the_post_thumbnail (featured image)
 add_action('genesis_before_content_sidebar_wrap', 'postcategory', 1);
 function postcategory() {
-    // Remove the entry title and post info (requires HTML5 theme support)
-    remove_action('genesis_entry_header', 'genesis_do_post_title');
-    remove_action('genesis_entry_header', 'genesis_post_info', 12);
+    $post_id     = get_the_ID();
+    $author_id   = get_post_field('post_author', $post_id);
+    $thumbnail_id = get_post_thumbnail_id($post_id);
 
-    global $post;
-    $author_id = $post->post_author;
-    $author_url = get_author_posts_url($author_id);
-    $author_name = get_the_author_meta('display_name', $author_id);
-    $author_login = get_the_author_meta('user_login', $author_id);
-    $categories = get_the_category_list(' ');
+    remove_post_header_meta();
     ?>
 
     <div class="header-box">
-        <div class="single-post-category">
-            <span><?php echo $categories; ?></span>
-        </div>
-        <h1 class="entry-title" itemprop="headline"><?php the_title(); ?></h1>
-        <p class="entry-meta">Por 
-            <span class="entry-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                <a href="<?php echo esc_url($author_url); ?>" class="entry-author-link" itemprop="url" rel="author">
-                    <span class="entry-author-name" itemprop="name"><?php echo esc_html($author_name); ?></span>
-                </a>
-            </span>&nbsp;|&nbsp;
-            <time itemprop="datePublished" content="<?php echo esc_attr(get_the_time('Y-m-d')); ?>">
-                <?php echo esc_html(get_the_time('F j Y')); ?>
-            </time>
-        </p>
-		<div class="full-img">
-			<?php 
-			$thumbnail_id = get_post_thumbnail_id();
-			$file_path = get_attached_file($thumbnail_id);
-			$path_parts = pathinfo($file_path);
-			$webp_file = $path_parts['dirname'] . '/' . $path_parts['filename'] . '.webp';
+        <?php render_author_header($author_id, $post_id); ?>
+        <?php render_featured_image($thumbnail_id); ?>
+    </div>
+    <?php
+}
 
-			$srcset = [
-				wp_get_attachment_image_url($thumbnail_id, 'medium') . ' 400w',
-				wp_get_attachment_image_url($thumbnail_id, 'portfolio') . ' 520w',
-				wp_get_attachment_image_url($thumbnail_id, 'large') . ' 730w'
-			];
+/**
+ * Remove default title and post meta from the entry header.
+ */
+function remove_post_header_meta() {
+    remove_action('genesis_entry_header', 'genesis_do_post_title');
+    remove_action('genesis_entry_header', 'genesis_post_info', 12);
+}
 
-			if (file_exists($webp_file)) {
-				// Crear URL para WebP
-				$uploads_dir = wp_upload_dir();
-				$webp_url = str_replace($uploads_dir['basedir'], $uploads_dir['baseurl'], $webp_file);
+/**
+ * Output the category, title and author information in the post header.
+ *
+ * @param int $author_id Author identifier.
+ * @param int $post_id   Current post identifier.
+ */
+function render_author_header($author_id, $post_id) {
+    $author_url = get_author_posts_url($author_id);
+    $author_name = get_the_author_meta('display_name', $author_id);
+    $categories = get_the_category_list(' ', '', $post_id);
+    ?>
+    <div class="single-post-category">
+        <span><?php echo $categories; ?></span>
+    </div>
+    <h1 class="entry-title" itemprop="headline"><?php echo esc_html(get_the_title($post_id)); ?></h1>
+    <p class="entry-meta">Por
+        <span class="entry-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+            <a href="<?php echo esc_url($author_url); ?>" class="entry-author-link" itemprop="url" rel="author">
+                <span class="entry-author-name" itemprop="name"><?php echo esc_html($author_name); ?></span>
+            </a>
+        </span>&nbsp;|&nbsp;
+        <time itemprop="datePublished" content="<?php echo esc_attr(get_the_time('Y-m-d', $post_id)); ?>">
+            <?php echo esc_html(get_the_time('F j Y', $post_id)); ?>
+        </time>
+    </p>
+    <?php
+}
 
-				// Crear srcset para WebP
-				$webp_srcset = [];
-				foreach ($srcset as $src) {
-					$parts = explode(' ', $src);
-					$webp_srcset[] = str_replace(['.jpg', '.jpeg', '.png'], '.webp', $parts[0]) . ' ' . $parts[1];
-				}
+/**
+ * Display the featured image with WebP support when available.
+ *
+ * @param int $thumbnail_id Attachment ID for the featured image.
+ */
+function render_featured_image($thumbnail_id) {
+    ?>
+    <div class="full-img">
+        <?php
+        $file_path  = get_attached_file($thumbnail_id);
+        $path_parts = pathinfo($file_path);
+        $webp_file  = $path_parts['dirname'] . '/' . $path_parts['filename'] . '.webp';
 
-				echo '<picture>';
-				echo '<source srcset="' . esc_attr(implode(', ', $webp_srcset)) . '" type="image/webp">';
-				echo '<source srcset="' . esc_attr(implode(', ', $srcset)) . '">';
+        $srcset = [
+            wp_get_attachment_image_url($thumbnail_id, 'medium') . ' 400w',
+            wp_get_attachment_image_url($thumbnail_id, 'portfolio') . ' 520w',
+            wp_get_attachment_image_url($thumbnail_id, 'large') . ' 730w',
+        ];
 
-				the_post_thumbnail('large', [
-					'class' => 'aligncenter',
-					'fetchpriority' => 'high', 
-					'loading' => 'eager',
-					'decoding' => 'async'
-				]);
+        if (file_exists($webp_file)) {
+            // Crear URL para WebP
+            $uploads_dir = wp_upload_dir();
+            $webp_url    = str_replace($uploads_dir['basedir'], $uploads_dir['baseurl'], $webp_file);
 
-				echo '</picture>';
-			} else {
-				// No hay WebP, usar la imagen original
-				the_post_thumbnail('large', [
-					'class' => 'aligncenter',
-					'srcset' => implode(', ', $srcset),
-					'fetchpriority' => 'high', 
-					'loading' => 'eager',
-					'decoding' => 'async'
-				]); 
-			}
-			?>
-		</div>
-    </div> 
+            // Crear srcset para WebP
+            $webp_srcset = [];
+            foreach ($srcset as $src) {
+                $parts        = explode(' ', $src);
+                $webp_srcset[] = str_replace(['.jpg', '.jpeg', '.png'], '.webp', $parts[0]) . ' ' . $parts[1];
+            }
+
+            echo '<picture>';
+            echo '<source srcset="' . esc_attr(implode(', ', $webp_srcset)) . '" type="image/webp">';
+            echo '<source srcset="' . esc_attr(implode(', ', $srcset)) . '">';
+            the_post_thumbnail('large', [
+                'class'         => 'aligncenter',
+                'fetchpriority' => 'high',
+                'loading'       => 'eager',
+                'decoding'      => 'async',
+            ]);
+            echo '</picture>';
+        } else {
+            // No hay WebP, usar la imagen original
+            the_post_thumbnail('large', [
+                'class'         => 'aligncenter',
+                'srcset'        => implode(', ', $srcset),
+                'fetchpriority' => 'high',
+                'loading'       => 'eager',
+                'decoding'      => 'async',
+            ]);
+        }
+        ?>
+    </div>
     <?php
 }
 	
