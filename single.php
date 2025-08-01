@@ -68,14 +68,7 @@ function deregister_yarpp_styles() {
 
 	
 /** Modificar el formato de fecha y la etiqueta del mes */
-add_filter('the_time', 'modify_date_format');
-function modify_date_format() {
-    $month_names = array(
-        1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio',
-        7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
-    );
-    return $month_names[get_the_time('n')] . ' ' . get_the_time('j') . ', ' . get_the_time('Y');
-}
+add_filter('the_time', 'okc_format_date');
 
 // Adds header box - Category, entry-title, entry-meta & the_post_thumbnail (featured image)
 add_action('genesis_before_content_sidebar_wrap', 'postcategory', 1);
