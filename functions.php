@@ -26,6 +26,21 @@ function sp_viewport_meta_tag() {
 //* Remove the secondary navigation menu
 remove_action('genesis_after_header', 'genesis_do_subnav');
 
+/**
+ * Devuelve la fecha formateada con nombres de meses en español.
+ *
+ * @return string
+ */
+function okc_format_date() {
+    $month_names = array(
+        1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+        5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+        9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+    );
+
+    return $month_names[get_the_time('n')] . ' ' . get_the_time('j') . ', ' . get_the_time('Y');
+}
+
 /* Optimize your CSS https://web.dev/fast/#optimize-your-css | STYLE.CSS MODS to optimize delivery
  * 	1 - Remove parent style.css
  * 	2 - Replace style.css with a date query string when modified
