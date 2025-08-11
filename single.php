@@ -183,8 +183,7 @@ function render_featured_image($thumbnail_id) {
 add_action('genesis_before_footer', 'custom_related_posts');
 function custom_related_posts() {
     ?>   
-    <div class="clearfix clearfix-treding"></div>
-    <div class="custom-related-posts">
+    <div class="custom-related-posts clearfix">
         <div class="yarpp-related">
             <?php 
             $args = array(
@@ -208,11 +207,9 @@ function custom_related_posts() {
 			
 		</div>
     </div>
-    <div class="clearfix clearfix-related"></div>
-    <div class="custom-related-posts">
+    <div class="custom-related-posts clearfix">
         <?php yarpp_related(); ?>   
     </div>
-    <div class="clearfix"></div>
     <?php
 }
 	

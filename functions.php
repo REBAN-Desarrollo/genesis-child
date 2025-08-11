@@ -35,6 +35,35 @@ function okc_format_date() {
     return date_i18n( 'F j, Y', get_the_time( 'U' ) );
 }
 
+/**
+ * Add clearfix utility class to common Genesis containers.
+ */
+function okc_add_clearfix_class( $attr ) {
+    if ( isset( $attr['class'] ) ) {
+        $attr['class'] .= ' clearfix';
+    } else {
+        $attr['class'] = 'clearfix';
+    }
+    return $attr;
+}
+
+foreach ( array(
+    'entry',
+    'entry-content',
+    'footer-widgets',
+    'nav-primary',
+    'nav-secondary',
+    'pagination',
+    'site-container',
+    'site-footer',
+    'site-header',
+    'site-inner',
+    'widget',
+    'wrap'
+) as $context ) {
+    add_filter( "genesis_attr_{$context}", 'okc_add_clearfix_class' );
+}
+
 /* Optimize your CSS https://web.dev/fast/#optimize-your-css | STYLE.CSS MODS to optimize delivery
  * 	1 - Remove parent style.css
  * 	2 - Replace style.css with a date query string when modified
@@ -168,15 +197,14 @@ function sp_search_text($text) {
 add_action('genesis_header', 'responsive_search');
 function responsive_search() {
 ?>
-	<div class="clearfix"></div>
-	<div class="responsive-search sb-right">
-		<form role="search" method="get" class="search-form" action="<?php echo home_url('/'); ?>">
-			<label>Busqueda:
-					<input type="text" value="" name="s" class="search-input" placeholder="Buscar en el sitio" />
-			</label>
-			<input type="submit" class="search-submit" value="Buscar"/>
-		</form>
-	</div>
+        <div class="responsive-search sb-right clearfix">
+                <form role="search" method="get" class="search-form" action="<?php echo home_url('/'); ?>">
+                        <label>Busqueda:
+                                        <input type="text" value="" name="s" class="search-input" placeholder="Buscar en el sitio" />
+                        </label>
+                        <input type="submit" class="search-submit" value="Buscar"/>
+                </form>
+        </div>
 <?php
 }
 
@@ -398,20 +426,20 @@ add_filter( 'genesis_author_box', 'be_author_box', 10, 6 );
  * @return string $output
  */
 function be_author_box( $output, $context, $pattern, $gravatar, $title, $description ) {
-		$output = '';
-		$output .= '<div class="author-box">';
-		$output .= '<div class="alignleft">';
-		$output .= get_avatar( get_the_author_meta( 'email' ), 120 );
-		$output .= '</div><!-- .left -->';
-		$output .= '<div class="alignright">';
-		$name = get_the_author();
-		$title = get_the_author_meta( 'title' );
-			if( !empty( $title ) )
-				$name .= ', ' . $title;
-		$output .= '<h2 class="title">'. $name;
-		$output .= '</h2>';
-		$output .= '<p class="desc">' . get_the_author_meta( 'description' ) . '</p>';
-		$output .= '</div><div class="clearfix"></div><!-- .right -->';
-		$output .= '</div><!-- .author-box -->';
-	return $output;
+                $output = '';
+                $output .= '<div class="author-box clearfix">';
+                $output .= '<div class="alignleft">';
+                $output .= get_avatar( get_the_author_meta( 'email' ), 120 );
+                $output .= '</div><!-- .left -->';
+                $output .= '<div class="alignright">';
+                $name = get_the_author();
+                $title = get_the_author_meta( 'title' );
+                        if( !empty( $title ) )
+                                $name .= ', ' . $title;
+                $output .= '<h2 class="title">'. $name;
+                $output .= '</h2>';
+                $output .= '<p class="desc">' . get_the_author_meta( 'description' ) . '</p>';
+                $output .= '</div>';
+                $output .= '</div><!-- .author-box -->';
+        return $output;
 }
