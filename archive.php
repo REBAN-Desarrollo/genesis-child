@@ -20,20 +20,20 @@ function my_custom_loop() {
         while (have_posts()) {
             the_post(); ?>
             <div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
-                <div class="full-post-container <?php echo (++$count % 2 ? 'odd' : 'even'); ?>">
+                <div class="full-post-container <?php echo esc_attr((++$count % 2 ? 'odd' : 'even')); ?>">
                     <div class="post-left-col">
-                        <a href="<?php the_permalink(); ?>"><?php the_post_thumbnail('portfolio'); ?></a>
+                        <a href="<?php echo esc_url( get_permalink() ); ?>"><?php the_post_thumbnail('portfolio'); ?></a>
                     </div>
                     <div class="post-right-col">
                         <h2>
-                            <a href="<?php the_permalink(); ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
-                                <?php the_title(); ?>
+                            <a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
+                                <?php echo esc_html( get_the_title() ); ?>
                             </a>
                         </h2>
-                        <span class="author">Por <?php the_author_posts_link(); ?></span> | 
+                        <span class="author">Por <?php the_author_posts_link(); ?></span> |
                         <span class="time">
-                            <time itemprop="datePublished" content="<?php the_time('Y-m-d'); ?>">
-                                <?php echo okc_format_date(); ?>
+                            <time itemprop="datePublished" content="<?php echo esc_attr( get_the_date('Y-m-d') ); ?>">
+                                <?php echo esc_html( get_the_date() ); ?>
                             </time>
                         </span>
                     </div>

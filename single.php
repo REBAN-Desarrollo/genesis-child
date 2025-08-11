@@ -116,8 +116,8 @@ function render_author_header($author_id, $post_id) {
                 <span class="entry-author-name" itemprop="name"><?php echo esc_html($author_name); ?></span>
             </a>
         </span>&nbsp;|&nbsp;
-        <time itemprop="datePublished" content="<?php echo esc_attr(get_the_time('Y-m-d', $post_id)); ?>">
-            <?php echo esc_html(get_the_time('F j Y', $post_id)); ?>
+        <time itemprop="datePublished" content="<?php echo esc_attr( get_the_date('Y-m-d', $post_id) ); ?>">
+            <?php echo esc_html( get_the_date('F j Y', $post_id) ); ?>
         </time>
     </p>
     <?php
