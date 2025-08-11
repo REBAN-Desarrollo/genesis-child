@@ -80,7 +80,7 @@ function string_trim($string, $trimLength = 40) {
     <?php if (have_posts()) : ?>
         <?php while (have_posts()) : the_post(); ?>
             <?php if (has_post_thumbnail()) : ?>
-				<a href="<?php the_permalink(); ?>" class="yarpp-thumbnail" rel="bookmark" title="<?php the_title_attribute(); ?>"><?php $image = my_resize(get_post_thumbnail_id(), '', 360, 188, true); if ($image): ?><img src="<?php echo esc_url($image['url']); ?>" width="<?php echo esc_attr($image['width']); ?>" height="<?php echo esc_attr($image['height']); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" /><?php endif; ?><div class="desc"><span><?php echo esc_html(string_trim(get_the_title(), 100)); ?></span></div></a>
+                                <a href="<?php echo esc_url( get_permalink() ); ?>" class="yarpp-thumbnail" rel="bookmark" title="<?php the_title_attribute(); ?>"><?php $image = my_resize(get_post_thumbnail_id(), '', 360, 188, true); if ($image): ?><img src="<?php echo esc_url($image['url']); ?>" width="<?php echo esc_attr($image['width']); ?>" height="<?php echo esc_attr($image['height']); ?>" alt="<?php the_title_attribute(); ?>" loading="lazy" /><?php endif; ?><div class="desc"><span><?php echo esc_html(string_trim(get_the_title(), 100)); ?></span></div></a>
             <?php endif; ?>
         <?php endwhile; ?>
     <?php else : ?>
