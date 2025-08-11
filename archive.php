@@ -10,9 +10,6 @@ add_filter('genesis_pre_get_option_site_layout', '__genesis_return_full_width_co
 /** Eliminar la ruta de navegación (breadcrumb) */
 remove_action('genesis_before_loop', 'genesis_do_breadcrumbs');
 
-/** Modificar el formato de fecha y la etiqueta del mes */
-add_filter('the_time', 'okc_format_date');
-
 /** Bucle personalizado para la página de inicio */
 function my_custom_loop() {
     if (have_posts()) {

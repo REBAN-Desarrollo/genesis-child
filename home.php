@@ -10,9 +10,6 @@ add_filter('genesis_pre_get_option_site_layout', '__genesis_return_full_width_co
 /** Eliminar la ruta de navegación (breadcrumb) */
 remove_action('genesis_before_loop', 'genesis_do_breadcrumbs');
 
-/** Modificar el formato de fecha y la etiqueta del mes */
-add_filter('the_time', 'okc_format_date');
-
 /** Bucle personalizado para la página de inicio */
 function my_custom_loop() {
     if (have_posts()) :
@@ -26,7 +23,7 @@ function my_custom_loop() {
                     <div class="post-right-col">
                         <h2><a href="<?php the_permalink() ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>"><?php the_title(); ?></a></h2>
                         <div class="home-author-box">
-                            <span class="author">Por <?php the_author_posts_link(); ?></span> | <span class="time"><time itemprop="datePublished" content="<?php the_time('F j') ?>"><?php the_time('F j') ?></time></span>
+                            <span class="author">Por <?php the_author_posts_link(); ?></span> | <span class="time"><time itemprop="datePublished" content="<?php the_time('Y-m-d'); ?>"><?php echo okc_format_date(); ?></time></span>
                         </div>
                     </div>
                 </div>

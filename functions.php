@@ -27,18 +27,12 @@ function sp_viewport_meta_tag() {
 remove_action('genesis_after_header', 'genesis_do_subnav');
 
 /**
- * Devuelve la fecha formateada con nombres de meses en español.
+ * Devuelve la fecha del post utilizando la configuración regional de WordPress.
  *
  * @return string
  */
 function okc_format_date() {
-    $month_names = array(
-        1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
-        5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
-        9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
-    );
-
-    return $month_names[get_the_time('n')] . ' ' . get_the_time('j') . ', ' . get_the_time('Y');
+    return date_i18n( 'j F, Y', get_post_time( 'U' ) );
 }
 
 /* Optimize your CSS https://web.dev/fast/#optimize-your-css | STYLE.CSS MODS to optimize delivery

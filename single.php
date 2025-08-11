@@ -67,9 +67,6 @@ function deregister_yarpp_styles() {
 }	
 
 	
-/** Modificar el formato de fecha y la etiqueta del mes */
-add_filter('the_time', 'okc_format_date');
-
 // Adds header box - Category, entry-title, entry-meta & the_post_thumbnail (featured image)
 add_action('genesis_before_content_sidebar_wrap', 'postcategory', 1);
 function postcategory() {
@@ -117,7 +114,7 @@ function render_author_header($author_id, $post_id) {
             </a>
         </span>&nbsp;|&nbsp;
         <time itemprop="datePublished" content="<?php echo esc_attr(get_the_time('Y-m-d', $post_id)); ?>">
-            <?php echo esc_html(get_the_time('F j Y', $post_id)); ?>
+            <?php echo esc_html(okc_format_date()); ?>
         </time>
     </p>
     <?php
