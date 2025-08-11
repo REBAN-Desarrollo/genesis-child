@@ -175,44 +175,16 @@ input[type="search"] {
 	-moz-box-sizing:    border-box;
 	box-sizing:         border-box;
 }
-/* Float Clearing -> replaced by flex container */
-.entry-content:before,
-.entry:before,
-.footer-widgets:before,
-.nav-primary:before,
-.nav-secondary:before,
-.pagination:before,
-.site-container:before,
-.site-footer:before,
-.site-header:before,
-.site-inner:before,
-.widget:before,
-.wrap:before {
+/* Float Clearing */
+.clearfix:before,
+.clearfix:after {
         content: " ";
         display: table;
 }
-.entry-content:after,
-.entry:after,
-.footer-widgets:after,
-.nav-primary:after,
-.nav-secondary:after,
-.pagination:after,
-.site-container:after,
-.site-footer:after,
-.site-header:after,
-.site-inner:after,
-.widget:after,
-.wrap:after {
+.clearfix:after {
         clear: both;
-        content: " ";
-        display: table;
 }
 
-.clearfix {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 2.564102564102564%;
-}
 /*
 Defaults
 ---------------------------------------------------------------------------------------------------- */

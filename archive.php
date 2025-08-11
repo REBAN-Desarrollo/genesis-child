@@ -20,7 +20,7 @@ function my_custom_loop() {
         while (have_posts()) {
             the_post(); ?>
             <div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
-                <div class="full-post-container <?php echo esc_attr((++$count % 2 ? 'odd' : 'even')); ?>">
+                <div class="full-post-container <?php echo esc_attr((++$count % 2 ? 'odd' : 'even')); ?> clearfix">
                     <div class="post-left-col">
                         <a href="<?php echo esc_url( get_permalink() ); ?>"><?php the_post_thumbnail('portfolio'); ?></a>
                     </div>
@@ -43,7 +43,6 @@ function my_custom_loop() {
     } else {
         echo '<p>No hay publicaciones.</p>';
     }
-    echo '<div class="clearfix"></div>';
     genesis_posts_nav();
 }
 
