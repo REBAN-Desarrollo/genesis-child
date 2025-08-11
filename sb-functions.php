@@ -100,4 +100,3 @@ function sb_add_header_buttons() {
     echo '<a class="sb-toggle-right search" href="#" aria-label="Header search button"><i class="icon-search"></i></a>';
 }
 add_action('genesis_header', 'sb_add_header_buttons');
-?>

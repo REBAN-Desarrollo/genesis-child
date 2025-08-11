@@ -46,4 +46,3 @@ remove_action('genesis_after_post_content', 'genesis_post_meta');
 
 /** Ejecutar Genesis */
 genesis();
-?>
