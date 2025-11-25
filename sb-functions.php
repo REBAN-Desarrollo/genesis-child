@@ -45,11 +45,11 @@ function sb_side_bar_widgets() {
     echo '</div>';
     if (is_active_sidebar('sb-sidebar-left') || is_active_sidebar('sb-sidebar-right')) {
         genesis_widget_area('sb-sidebar-left', array(
-            'before' => '<div class="sb-slidebar sb-left widget-area sb-menu">',
+            'before' => '<div class="sb-slidebar sb-left widget-area sb-menu" role="complementary" aria-label="Menu lateral izquierdo">',
             'after' => '</div>',
         ));
         genesis_widget_area('sb-sidebar-right', array(
-            'before' => '<div class="sb-slidebar sb-right sb-style-overlay widget-area">',
+            'before' => '<div class="sb-slidebar sb-right sb-style-overlay widget-area" role="complementary" aria-label="Menu lateral derecho">',
             'after' => '</div>',
         ));
     }

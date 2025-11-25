@@ -230,6 +230,46 @@ a {
 a:hover {
 	color: #222;
 }
+.skip-links {
+	position: absolute;
+	top: 0;
+	left: -9999px;
+	z-index: 100000;
+	display: flex;
+	flex-direction: column;
+	gap: .8rem;
+}
+.skip-links:focus-within {
+	left: 1rem;
+}
+.skip-link {
+	display: inline-block;
+	padding: .8rem 1.2rem;
+	background-color: #FF3971;
+	color: #fff;
+	font-weight: 700;
+	text-decoration: none;
+	box-shadow: 0 .2rem .4rem rgba(0, 0, 0, 0.2);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+	outline: .3rem solid #000;
+	outline-offset: .2rem;
+}
+a:focus,
+a:focus-visible,
+button:focus,
+button:focus-visible,
+select:focus,
+select:focus-visible,
+input:focus,
+input:focus-visible,
+textarea:focus,
+textarea:focus-visible {
+	outline: .3rem solid #FF3971;
+	outline-offset: .3rem;
+	box-shadow: none;
+}
 p, li {
 	font-family: 'Proxima Nova', 'Proxima-fallback',sans-serif;
 }
@@ -375,7 +415,8 @@ input[type="checkbox"], input[type="radio"], input[type="image"] {
 }
 input:focus, textarea:focus {
 	border: .1rem solid #aaa;
-	outline: none;
+	outline: .3rem solid #FF3971;
+	outline-offset: .2rem;
 }
 ::-moz-placeholder {
 	color: #999;

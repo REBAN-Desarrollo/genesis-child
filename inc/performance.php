@@ -9,8 +9,8 @@
  *      1.b - Preconnect / dns-preload:https://web.dev/preconnect-and-dns-prefetch/
  * 2 - Inline ATF Critical CSS:
  */
-add_action( 'wp_head', 'headscripts1', 2 );
-function headscripts1() {
+add_action( 'wp_head', 'reban_perf_preloads', 2 );
+function reban_perf_preloads() {
     ?>
         <link rel="preload" href="/wp-content/uploads/2023/01/Logo-OK-circulo-619x110-02.png" width="619" height="110" as="image">
         <link rel="preload" href="/wp-content/themes/okchicas5/fonts/rebanfont.woff2" as="font" type="font/woff2" crossorigin="anonymous">
@@ -33,8 +33,8 @@ function headscripts1() {
 }
 
 // Transform styles.css markup to load CSS asynchronously and add style.css on head position #2.
-add_filter( 'style_loader_tag', 'style_transform_loadCSS', 10, 2 );
-function style_transform_loadCSS( $html, $handle ) {
+add_filter( 'style_loader_tag', 'reban_perf_async_css', 10, 2 );
+function reban_perf_async_css( $html, $handle ) {
     if ( $handle == CHILD_THEME_NAME ) {
         $search  = array( "rel='stylesheet' id='$handle-css'", "type='text/css' media='all'" );
         $replace = array( 'rel="preload"', "as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\"" );
@@ -44,8 +44,8 @@ function style_transform_loadCSS( $html, $handle ) {
 }
 
 /** Add async attributes to enqueued scripts where needed.The ability to filter script tags was added in WordPress 4.1 for this purpose. */
-add_filter( 'script_loader_tag', 'my_main_async_scripts', 10, 3 );
-function my_main_async_scripts( $tag, $handle, $src ) {
+add_filter( 'script_loader_tag', 'reban_perf_async_js', 10, 3 );
+function reban_perf_async_js( $tag, $handle, $src ) {
     // the handles of the enqueued scripts we want to async.
     $async_scripts = array( CHILD_THEME_NAME );
     if ( in_array( $handle, $async_scripts ) ) {
