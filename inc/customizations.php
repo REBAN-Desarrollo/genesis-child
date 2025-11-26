@@ -115,11 +115,12 @@ function reban_custom_search_text( $text ) {
 }
 add_action( 'genesis_header', 'reban_custom_search_form' );
 function reban_custom_search_form() {
+    $search_id = wp_unique_id( 'search-' );
 ?>
         <div class="responsive-search sb-right clearfix">
-                <form role="search" method="get" class="search-form" action="<?php echo home_url('/'); ?>">
-                        <label>Busqueda:
-                                        <input type="text" value="" name="s" class="search-input" placeholder="Buscar en el sitio" />
+                <form role="search" method="get" class="search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+                        <label for="<?php echo esc_attr( $search_id ); ?>">Busqueda:
+                                        <input id="<?php echo esc_attr( $search_id ); ?>" type="text" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" class="search-input" placeholder="Buscar en el sitio" />
                         </label>
                         <input type="submit" class="search-submit" value="Buscar"/>
                 </form>

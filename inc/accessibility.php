@@ -55,10 +55,16 @@ add_filter( 'genesis_attr_nav-primary', 'okc_primary_nav_attributes' );
 
 // Agregar etiquetas accesibles a los campos de formulario.
 function reban_a11y_search_labels( $form ) {
+	$search_id    = wp_unique_id( 'search-' );
+	$search_label = sprintf(
+		'<label for="%1$s">Buscar: <input id="%1$s" type="text" value="" name="s" class="search-input" placeholder="Buscar en el sitio" /></label>',
+		esc_attr( $search_id )
+	);
+
 	// Mejorar accesibilidad de formulario de busqueda.
 	$form = str_replace(
 		'<input type="text" value="" name="s" class="search-input" placeholder="Buscar en el sitio" />',
-		'<label for="search-input">Buscar: <input id="search-input" type="text" value="" name="s" class="search-input" placeholder="Buscar en el sitio" /></label>',
+		$search_label,
 		$form
 	);
 	return $form;
