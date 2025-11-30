@@ -2,6 +2,23 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.11.37
+
+- Limpieza de `css/style.css`: se retiraron `!important` obsoletos y prefijos heredados en menús/slidebar, y el sidebar lateral se queda sticky con `position: sticky` en desktop.
+- `js/all.js` ahora es vanilla (slidebar izquierda con overlay, headroom móvil, videos fluidos y guardado de billboard) y ya no depende de jQuery encolado en `inc/assets.php`.
+
+## 25.11.36
+
+- Los prefijos `okc_*`/`sp_*` se normalizan a `reban_*` y se documentan los filtros de accesibilidad/meta para mantener los hooks alineados.
+- Nuevo helper `reban_setup_archive_template()` en `inc/template-helpers.php` que desactiva breadcrumbs/meta, fuerza ancho completo y reemplaza el loop en `home.php`, `archive.php` y `search.php`.
+- Fuentes: los fallbacks y el CSS critico ahora usan `font-display: swap` y se mantienen los preloads woff2 solo para las tres familias criticas.
+- Sistema de diseno con custom properties en `css/style.css` (colores, tipografias, espaciados, focus ring) y primario ajustado a #d6006b para mejorar contraste y estados `:focus-visible` uniformes.
+- Accesibilidad en listados: miniaturas con `alt` explicito, botones de busqueda con `aria-label`, y labels/categorias apoyadas en el nuevo primario para legibilidad.
+
+## 25.11.35
+
+- Se eliminaron las fuentes TTF de todas las declaraciones `@font-face` y CSS crítico (sólo se sirven WOFF2/WOFF), manteniendo los archivos en el tema para posibles conversiones futuras.
+
 ## 25.11.34
 
 - Las slidebars ahora siempre se pintan (aunque no haya widgets) con menú primario de respaldo y un buscador dedicado, de modo que los toggles vuelven a abrir contenido en móvil.

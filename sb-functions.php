@@ -90,7 +90,7 @@ function sb_side_bar_widgets() {
                         <span class="screen-reader-text"><?php esc_html_e( 'Buscar en el sitio', 'mpp' ); ?></span>
                     </label>
                     <input id="<?php echo esc_attr( $search_id ); ?>" type="search" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" class="search-input" placeholder="<?php esc_attr_e( 'Buscar en el sitio', 'mpp' ); ?>" />
-                    <input type="submit" class="search-submit" value="<?php esc_attr_e( 'Buscar', 'mpp' ); ?>"/>
+                    <input type="submit" class="search-submit" value="<?php esc_attr_e( 'Buscar', 'mpp' ); ?>" aria-label="<?php esc_attr_e( 'Buscar', 'mpp' ); ?>"/>
                 </form>
             </div>
             <?php

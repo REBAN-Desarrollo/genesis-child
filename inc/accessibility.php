@@ -6,7 +6,7 @@
 /**
  * Output skip links so keyboard users can bypass repeated navigation.
  */
-function okc_skip_links() {
+function reban_skip_links() {
 	?>
 	<div class="skip-links">
 		<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
@@ -14,7 +14,7 @@ function okc_skip_links() {
 	</div>
 	<?php
 }
-add_action( 'genesis_before', 'okc_skip_links', 1 );
+add_action( 'genesis_before', 'reban_skip_links', 1 );
 
 /**
  * Ensure main content is a valid skip-link target.
@@ -23,7 +23,7 @@ add_action( 'genesis_before', 'okc_skip_links', 1 );
  *
  * @return array
  */
-function okc_content_attributes( $attributes ) {
+function reban_content_attributes( $attributes ) {
 	$attributes['id']       = 'main-content';
 	$attributes['tabindex'] = '-1';
 
@@ -33,7 +33,7 @@ function okc_content_attributes( $attributes ) {
 
 	return $attributes;
 }
-add_filter( 'genesis_attr_content', 'okc_content_attributes' );
+add_filter( 'genesis_attr_content', 'reban_content_attributes' );
 
 /**
  * Ensure primary navigation is an accessible skip-link target.
@@ -42,7 +42,7 @@ add_filter( 'genesis_attr_content', 'okc_content_attributes' );
  *
  * @return array
  */
-function okc_primary_nav_attributes( $attributes ) {
+function reban_nav_attributes( $attributes ) {
 	$attributes['id'] = 'site-navigation';
 
 	if ( empty( $attributes['aria-label'] ) ) {
@@ -51,7 +51,7 @@ function okc_primary_nav_attributes( $attributes ) {
 
 	return $attributes;
 }
-add_filter( 'genesis_attr_nav-primary', 'okc_primary_nav_attributes' );
+add_filter( 'genesis_attr_nav-primary', 'reban_nav_attributes' );
 
 // Agregar etiquetas accesibles a los campos de formulario.
 function reban_a11y_search_labels( $form ) {

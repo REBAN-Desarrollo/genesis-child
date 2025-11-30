@@ -10,5 +10,6 @@ require_once get_stylesheet_directory() . '/inc/assets.php';
 require_once get_stylesheet_directory() . '/inc/performance.php';
 require_once get_stylesheet_directory() . '/inc/accessibility.php';
 require_once get_stylesheet_directory() . '/inc/customizations.php';
+require_once get_stylesheet_directory() . '/inc/template-helpers.php';
 
 include get_stylesheet_directory() . '/sb-functions.php';

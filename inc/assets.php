@@ -23,5 +23,5 @@ function reban_assets_js() {
     $javascript_dir = get_stylesheet_directory() . '/js/all.js';
     $last_modified  = filemtime( $javascript_dir ); // mantener sync con estilo en segundos
 
-    wp_enqueue_script( CHILD_THEME_NAME, $javascript_uri, array( 'jquery' ), $last_modified, true );
+    wp_enqueue_script( CHILD_THEME_NAME, $javascript_uri, array(), $last_modified, true );
 }

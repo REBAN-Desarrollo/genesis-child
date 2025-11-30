@@ -39,7 +39,24 @@ function reban_loop_archive( $args = array() ) {
             <div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
                 <div class="full-post-container <?php echo esc_attr( (++$count % 2 ? 'odd' : 'even') ); ?> clearfix">
                     <div class="post-left-col">
-                        <a href="<?php echo esc_url( get_permalink() ); ?>"><?php the_post_thumbnail('portfolio'); ?></a>
+                        <a href="<?php echo esc_url( get_permalink() ); ?>">
+                            <?php
+                            $thumbnail_id  = get_post_thumbnail_id();
+                            $thumbnail_alt = $thumbnail_id ? get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true ) : '';
+
+                            if ( '' === $thumbnail_alt ) {
+                                $thumbnail_alt = get_the_title();
+                            }
+
+                            the_post_thumbnail(
+                                'portfolio',
+                                array(
+                                    'alt'     => $thumbnail_alt,
+                                    'loading' => 'lazy',
+                                )
+                            );
+                            ?>
+                        </a>
                     </div>
                     <div class="post-right-col">
                         <h2>
@@ -99,9 +116,14 @@ foreach ( array(
     add_filter( "genesis_attr_{$context}", 'reban_custom_clearfix' );
 }
 
-//* Customize the entry meta in the entry header (requires HTML5 theme support)
-add_filter( 'genesis_post_info', 'sp_post_info_filter' );
-function sp_post_info_filter( $post_info ) {
+/**
+ * Customize the entry meta in the entry header (requires HTML5 theme support).
+ *
+ * @param string $post_info Default post info markup.
+ * @return string Filtered post info markup.
+ */
+add_filter( 'genesis_post_info', 'reban_post_info_filter' );
+function reban_post_info_filter( $post_info ) {
     $category  = get_the_category();
     //$post_info =  '<span class="post-category">' . $category[0]->cat_name .'</span>'. '[post_author_posts_link] [post_date]';
     $post_info = '- Por [post_author_posts_link]';
@@ -122,7 +144,7 @@ function reban_custom_search_form() {
                         <label for="<?php echo esc_attr( $search_id ); ?>">Busqueda:
                                         <input id="<?php echo esc_attr( $search_id ); ?>" type="text" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" class="search-input" placeholder="Buscar en el sitio" />
                         </label>
-                        <input type="submit" class="search-submit" value="Buscar"/>
+                        <input type="submit" class="search-submit" value="Buscar" aria-label="Buscar"/>
                 </form>
         </div>
 <?php

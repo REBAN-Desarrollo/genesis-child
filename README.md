@@ -33,6 +33,18 @@ git clone https://github.com/<usuario>/okchicas.com.git okchicas
 - `home.php`, `archive.php`, `single.php` - Plantillas principales.
 - `css/`, `js/`, `fonts/`, `images/` - Recursos estaticos.
 
+## Sistema de diseno
+
+- Tokens en `css/style.css` bajo `:root`:
+  - Colores: `--color-primary` (#d6006b), `--color-text`, `--color-text-muted`, `--color-surface`, `--color-surface-dark`, `--color-border`, `--color-border-strong`.
+  - Tipografias: `--font-primary` (Poppins), `--font-secondary` (Proxima Nova), `--font-icon` (rebanfont).
+  - Espaciados y foco: `--spacing-xs`/`sm`/`md`/`lg`/`xl`, `--radius-sm`, `--focus-ring`, `--focus-ring-offset`.
+- Los estilos de categorias, paginacion, slidebars y los estados `:focus-visible` consumen estos tokens para evitar colores y fuentes sueltas.
+
+## Utilidades de plantillas
+
+- `reban_setup_archive_template( $args )` (`inc/template-helpers.php`): fuerza ancho completo, quita breadcrumbs/meta y sustituye el loop de Genesis por `reban_loop_archive()` con argumentos opcionales (mensaje vacio, formato de fecha, envoltura de autor).
+
 ## Diagrama de arquitectura
 
 ```
