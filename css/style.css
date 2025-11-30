@@ -123,6 +123,10 @@
   --focus-ring: 0 0 0 0.3rem rgba(214, 0, 107, 0.5);
   --focus-ring-offset: 0.2rem;
   --slidebar-width: 28rem;
+  --slidebar-bg: #16171b;
+  --slidebar-surface: #1f2025;
+  --slidebar-border: rgba(214, 0, 107, 0.35);
+  --slidebar-text: #f2f2f2;
 }
 
 /* icomoon.io fonts */
@@ -984,7 +988,10 @@ a.alignright img, img.alignright, .wp-caption.alignright {
 	width: 29rem;
 	height: 5.5rem;
 	margin: .5rem 0;
-	background-size: 100%;
+	background-image: url('../images/Logo-OK-circulo-619x110-02.png');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
 }
 /* Widget Area
 --------------------------------------------- */
@@ -2097,24 +2104,24 @@ body.sb-locked {
 	left: 0;
 	width: var(--slidebar-width);
 	max-width: 90vw;
-	padding: 2rem 1.5rem;
+	padding: 2.2rem 1.6rem;
 	overflow-y: auto;
 	overflow-x: hidden;
 	z-index: 50000;
-	background: #22282b;
-	color: #e8e8e8;
-	border-right: .4rem solid var(--color-primary);
+	background: linear-gradient(180deg, var(--slidebar-bg) 0%, #0f1014 100%);
+	color: var(--slidebar-text);
+	border-right: .35rem solid var(--color-primary);
 	transform: translateX(-100%);
-	transition: transform 0.3s ease;
+	transition: transform 0.3s ease, box-shadow 0.2s ease;
 	visibility: hidden;
+	box-shadow: 0 0 30px rgba(0, 0, 0, 0.35);
+	display: flex;
+	flex-direction: column;
+	gap: 1.4rem;
 }
 
 .sb-slidebar.sb-right {
-	left: auto;
-	right: 0;
-	border-right: 0;
-	border-left: .4rem solid var(--color-primary);
-	transform: translateX(100%);
+	display: none;
 }
 
 .sb-slidebar.is-open {
@@ -2124,24 +2131,31 @@ body.sb-locked {
 
 .sb-slidebar .responsive-search {
 	width: 100%;
-	margin-top: 0;
-	background: transparent;
+	margin: 0;
+	background: var(--slidebar-surface);
+	border-radius: 1.2rem;
+	padding: 1.2rem 1.4rem;
+	box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.35);
+	border: 1px solid var(--slidebar-border);
 }
 
 .sb-slidebar .responsive-search .search-form {
 	width: 100%;
-	max-width: 24rem;
-	gap: .6rem;
-	margin: 0 auto;
+	max-width: none;
+	gap: .8rem;
+	margin: 0;
+	display: flex;
+	align-items: center;
 }
 
 .sb-slidebar .responsive-search input[type="search"] {
-	background: none;
-	border: none;
-	border-bottom: .1rem solid rgba(255, 255, 255, 0.25);
-	box-shadow: none;
+	background: rgba(255, 255, 255, 0.06);
+	border: .1rem solid rgba(255, 255, 255, 0.16);
+	border-radius: 999px;
+	box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 	color: #fff;
-	padding: 1.2rem 0 .9rem 0;
+	padding: 1rem 1.4rem;
+	flex: 1 1 auto;
 }
 
 .sb-slidebar .responsive-search input[type="search"]::placeholder {
@@ -2149,38 +2163,59 @@ body.sb-locked {
 }
 
 .sb-slidebar .responsive-search .search-submit {
-	font-family: var(--font-icon);
-	background: none;
+	font-family: var(--font-primary);
+	display: inline-flex;
+	align-items: center;
+	gap: .6rem;
+	background: var(--color-primary);
 	border: none;
 	color: #fff;
 	width: auto;
-	padding: 1.2rem 0;
+	padding: .9rem 1.4rem;
+	border-radius: 999px;
+	box-shadow: 0 0.5rem 1.5rem rgba(214, 0, 107, 0.35);
+}
+
+.sb-slidebar .responsive-search .search-submit i {
+	font-style: normal;
+	font-size: 1.6rem;
+	line-height: 1;
+}
+
+.sb-slidebar .responsive-search .search-submit .search-submit-text {
+	display: none;
+	font-weight: 700;
+	letter-spacing: .01em;
 }
 
 .sb-slidebar .responsive-nav-menu {
-	padding-left: 1.6rem;
-	margin: 1.4rem 0 0;
+	padding-left: 0;
+	margin: 0;
 }
 
 .sb-slidebar .responsive-nav-menu .menu-item {
-	list-style: square;
-	font-size: 2.4rem;
-	margin-top: .2rem;
-	line-height: 1.1;
+	list-style: none;
+	font-size: 1.6rem;
+	margin-top: 0;
+	line-height: 1.2;
 }
 
 .sb-slidebar .responsive-nav-menu .menu-item a {
-	display: block;
-	color: #fff;
-	font-size: 1.4rem;
-	padding: .8rem 0 1rem 0;
-	border-top: .1rem solid #2b3336;
-	border-bottom: .1rem solid #171b1d;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	color: var(--slidebar-text);
+	font-size: 1.45rem;
+	padding: 1rem 1.2rem;
+	border-radius: .9rem;
+	border: 1px solid rgba(255, 255, 255, 0.04);
+	background: rgba(255, 255, 255, 0.03);
+	text-decoration: none;
 }
 
 .sb-slidebar .responsive-nav-menu ul.sub-menu {
 	margin: 0.4rem 0 0;
-	padding-left: 1.6rem;
+	padding-left: 1.2rem;
 }
 
 .sb-slidebar .responsive-nav-menu ul.sub-menu .menu-item {
@@ -2189,61 +2224,81 @@ body.sb-locked {
 }
 
 .sb-slidebar .responsive-nav-menu ul.sub-menu .menu-item a {
-	padding-left: 0;
+	padding-left: 1rem;
+	font-size: 1.35rem;
+	background: rgba(255, 255, 255, 0.02);
 }
 
 .sb-slidebar .sb-menu {
 	padding: 0;
 	margin: 0;
 	list-style-type: none;
-	line-height: 2rem;
-	background-color: var(--color-surface-dark);
+	line-height: 1.2;
+	background-color: transparent;
 }
 
 .sb-slidebar .sb-menu li {
 	width: 100%;
 	padding: 0;
-	margin: 0;
-	border-top: .1rem solid rgba(255, 255, 255, 0.1);
-	border-bottom: .1rem solid rgba(0, 0, 0, 0.1);
+	margin: 0 0 .4rem 0;
+	border-top: none;
+	border-bottom: none;
 }
 
 .sb-slidebar .sb-menu > li:first-child {
-	border-top: none;
+	margin-top: .2rem;
 }
 
 .sb-slidebar .sb-menu > li:last-child {
-	border-bottom: none;
+	margin-bottom: 0;
 }
 
 .sb-slidebar .sb-menu li a {
 	width: 100%;
-	display: inline-block;
-	padding: 1em;
-	color: #f2f2f2;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1rem 1.2rem;
+	color: var(--slidebar-text);
+	border-radius: .9rem;
+	border: 1px solid rgba(255, 255, 255, 0.04);
+	background: rgba(255, 255, 255, 0.03);
 }
 
 .sb-slidebar .sb-menu li a:hover {
 	text-decoration: none;
-	background-color: rgba(255, 255, 255, 0.05);
-	border-left: .4rem solid var(--color-primary);
-	color: var(--color-primary);
+	background-color: rgba(214, 0, 107, 0.14);
+	border-left: .35rem solid var(--color-primary);
+	border-color: var(--slidebar-border);
+	color: #fff;
+	box-shadow: inset 0 0 0 1px rgba(214, 0, 107, 0.2);
 }
 
 .sb-slidebar.sb-left .sb-menu li a {
     border-left: .3rem solid transparent;
     font-weight: 900;
-    padding: .6rem 1.3rem;
+    padding: 1rem 1.4rem;
     font-size: 1.45rem;
 }
 
 .sb-slidebar.sb-left .sb-menu li li a {
-    padding: .4rem 3rem;
+    padding: .8rem 1.1rem .8rem 2.6rem;
+    font-size: 1.35rem;
 }
 
 .sb-slidebar.sb-left .sb-menu li li a:before {
 	font-size: 1.6rem;
 	padding-right: 1.2rem;
+}
+
+#sb-sidebar-right {
+	display: none !important;
+}
+
+@media (min-width: 480px) {
+	.sb-slidebar .responsive-search .search-submit .search-submit-text {
+		display: inline;
+	}
 }
 
 .sb-submenu {

@@ -2,6 +2,25 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.04
+
+- Simplificamos la deteccion de bajada en headroom al quitar la comprobacion redundante de distancia.
+- El listener de resize de headroom ahora usa un debounce ligero para evitar trabajo extra al redimensionar.
+
+## 25.12.03
+
+- Se reestructura la slidebar: solo se imprime la izquierda (se mantiene el registro de la derecha por compatibilidad) y el buscador vive al inicio de ese panel, eliminando el toggle/botón derecho.
+- Estilos del off-canvas actualizados (fondo degradado, inputs en píldora, hover con acento y listas sin bullets rojos) para que ambos menús laterales se vean más limpios en móvil.
+- El logo del header usa el PNG del tema como fallback explícito para evitar que desaparezca cuando no hay un logo personalizado cargado.
+
+## 25.12.02
+
+- Se desactivo el render de las slidebars en `sb-functions.php`, dejando solo el contenedor `#sb-site` para evitar que se impriman menus/widgets en el sidebar.
+
+## 25.12.01
+
+- Se actualizó la cabecera de `style.css` a la versión 25.12.01 para asegurar que WordPress tome el update del tema.
+
 ## 25.11.37
 
 - Limpieza de `css/style.css`: se retiraron `!important` obsoletos y prefijos heredados en menús/slidebar, y el sidebar lateral se queda sticky con `position: sticky` en desktop.

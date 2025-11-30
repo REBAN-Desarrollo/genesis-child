@@ -184,6 +184,7 @@
     let enabled = false;
     let lastY = window.scrollY;
     let ticking = false;
+    let resizeTimer;
 
     const reset = () => {
       header.classList.remove('headroom', 'bajando', 'subiendo', 'noesarriba', 'topando');
@@ -208,7 +209,7 @@
       header.classList.add('noesarriba');
       header.classList.remove('topando');
 
-      if (delta > 0 && distance > 0) {
+      if (delta > 0) {
         header.classList.add('bajando');
         header.classList.remove('subiendo');
       } else if (delta < 0 && distance >= HEADROOM_TOLERANCE_UP) {
@@ -253,7 +254,7 @@
       reset();
     };
 
-    const onResize = () => {
+    const applyBreakpoint = () => {
       if (window.innerWidth <= HEADROOM_BREAKPOINT) {
         enable();
       } else {
@@ -261,7 +262,12 @@
       }
     };
 
-    onResize();
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(applyBreakpoint, 120);
+    };
+
+    applyBreakpoint();
     window.addEventListener('resize', onResize);
   }
 
