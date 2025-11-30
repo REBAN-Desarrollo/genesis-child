@@ -11,7 +11,7 @@ add_action( 'wp_enqueue_scripts', 'reban_assets_css' );
 function reban_assets_css() {
     $stylesheet_uri = get_stylesheet_directory_uri() . '/css/style.css';
     $stylesheet_dir = get_stylesheet_directory() . '/css/style.css';
-    $last_modified  = date( 'ymd.hi', filemtime( $stylesheet_dir ) );
+    $last_modified  = filemtime( $stylesheet_dir ); // segundos exactos para bustear cache al guardar
 
     wp_enqueue_style( CHILD_THEME_NAME, $stylesheet_uri, array(), $last_modified );
 }
@@ -21,7 +21,7 @@ add_action( 'wp_enqueue_scripts', 'reban_assets_js' );
 function reban_assets_js() {
     $javascript_uri = get_stylesheet_directory_uri() . '/js/all.js';
     $javascript_dir = get_stylesheet_directory() . '/js/all.js';
-    $last_modified  = date( 'ymd.hi', filemtime( $javascript_dir ) );
+    $last_modified  = filemtime( $javascript_dir ); // mantener sync con estilo en segundos
 
-    wp_enqueue_script( CHILD_THEME_NAME, $javascript_uri, array(), $last_modified );
+    wp_enqueue_script( CHILD_THEME_NAME, $javascript_uri, array( 'jquery' ), $last_modified, true );
 }

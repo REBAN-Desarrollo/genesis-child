@@ -2,6 +2,42 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.11.34
+
+- Las slidebars ahora siempre se pintan (aunque no haya widgets) con menú primario de respaldo y un buscador dedicado, de modo que los toggles vuelven a abrir contenido en móvil.
+- El bloque de búsqueda que se renderiza en el header queda oculto para evitar la franja negra; el buscador vive dentro de la slidebar derecha con estilos visibles (y se mantiene incluso si agregas widgets).
+- El `preload` del logo toma la ruta del logo personalizado/encabezado activo antes de usar el fallback, eliminando la advertencia de recurso no usado.
+
+## 25.11.33
+
+- Las declaraciones `@font-face` de `style.css` ahora usan rutas relativas a `../fonts/` para evitar 404 si cambia el nombre del directorio del tema.
+- El CSS crítico de `single.php` versiona las fuentes con `filemtime` (igual que `performance.php`), reemplazando las rutas hardcodeadas del child theme por URLs dinámicas.
+
+## 25.11.32
+
+- Los toggles de Slidebars ahora incluyen `aria-expanded` y `aria-controls` apuntando a sus sidebars para mejorar la navegacion con lectores de pantalla.
+- Enlaces sociales del footer incorporan texto accesible usando la nueva utilidad `.screen-reader-text`.
+- Las skip-links usan clipping en vez de desplazar fuera de pantalla, haciendo visible el bloque al navegar con teclado.
+
+## 25.11.31
+
+- Restauramos el handle `jquery` de WordPress al eliminar su desregistracion en cleanup, para que Slidebars y HC-Sticky vuelvan a inicializarse.
+- `js/all.js` ahora solo incluye los plugins (Slidebars, Headroom, HC-Sticky) y se encola dependiente de `jquery` en footer, sin la copia embebida de jQuery.
+
+## 25.11.30
+
+- `wp-embed` ahora solo se desregistra cuando la entrada no requiere incrustaciones, evitando romper shortcodes que dependen de ese script.
+- La hoja `classic-theme-styles` se mantiene activa en entradas con bloques para no afectar estilos de Gutenberg; solo se elimina en vistas sin bloques.
+
+## 25.11.29
+
+- Ocultamos el billboard superior cuando GPT no llena el slot para evitar franjas negras sobre el titulo, con fondo blanco forzado como respaldo.
+
+## 25.11.28
+
+- Forzamos fondo blanco en el contenedor de billboard superior para evitar que aparezca una franja negra detras del titulo cuando no carga un anuncio.
+- La version del CSS/JS ahora usa `filemtime` en segundos completos para que el query string cambie en cada guardado y no solo una vez por minuto.
+
 ## 25.11.27
 
 - Preloads de logo/fuentes y el CSS critico ahora usan rutas del child theme con versionado via `filemtime`, evitando 404 si cambia el nombre del directorio.

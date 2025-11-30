@@ -57,9 +57,9 @@
   font-family: 'rebanfont';
   font-style: normal;
   font-weight: normal;
-  src: url("/wp-content/themes/okchicas5/fonts/rebanfont.woff2") format("woff2"),
-       url("/wp-content/themes/okchicas5/fonts/rebanfont.woff") format("woff"),
-       url("/wp-content/themes/okchicas5/fonts/rebanfont.ttf") format("truetype");
+  src: url("../fonts/rebanfont.woff2") format("woff2"),
+       url("../fonts/rebanfont.woff") format("woff"),
+       url("../fonts/rebanfont.ttf") format("truetype");
   font-display: swap;
 }
 	/* https://www.smashingmagazine.com/2021/06/how-to-fix-cumulative-layout-shift-issues/#web-fonts-cause-layout-shifts
@@ -73,9 +73,9 @@
   font-family: "Poppins";
   font-style: normal;
   font-weight: 500;
-  src: url("/wp-content/themes/okchicas5/fonts/Poppins-SemiBold.woff2") format("woff2"),
-       url("/wp-content/themes/okchicas5/fonts/Poppins-SemiBold.woff") format("woff"),
-       url("/wp-content/themes/okchicas5/fonts/Poppins-SemiBold.ttf") format("truetype");
+  src: url("../fonts/Poppins-SemiBold.woff2") format("woff2"),
+       url("../fonts/Poppins-SemiBold.woff") format("woff"),
+       url("../fonts/Poppins-SemiBold.ttf") format("truetype");
   font-display: swap;
 }
 @font-face {
@@ -90,9 +90,9 @@
   font-family: "Proxima Nova";
   font-style: normal;
   font-weight: normal;
-  src: url("/wp-content/themes/okchicas5/fonts/ProximaNova-Regular.woff2") format("woff2"),
-       url("/wp-content/themes/okchicas5/fonts/ProximaNova-Regular.woff") format("woff"),
-       url("/wp-content/themes/okchicas5/fonts/ProximaNova-Regular.ttf") format("truetype");
+  src: url("../fonts/ProximaNova-Regular.woff2") format("woff2"),
+       url("../fonts/ProximaNova-Regular.woff") format("woff"),
+       url("../fonts/ProximaNova-Regular.ttf") format("truetype");
   font-display: swap;
 }
 @font-face {
@@ -230,17 +230,43 @@ a {
 a:hover {
 	color: #222;
 }
+.screen-reader-text {
+	clip: rect(1px, 1px, 1px, 1px);
+	height: 1px;
+	width: 1px;
+	position: absolute !important;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.screen-reader-text:focus,
+.screen-reader-text:focus-visible {
+	clip: auto;
+	height: auto;
+	width: auto;
+	padding: .8rem 1.2rem;
+	position: static !important;
+	background-color: #FF3971;
+	color: #fff;
+}
 .skip-links {
+	clip: rect(1px, 1px, 1px, 1px);
 	position: absolute;
 	top: 0;
-	left: -9999px;
+	left: 0;
 	z-index: 100000;
 	display: flex;
 	flex-direction: column;
 	gap: .8rem;
+	height: 1px;
+	width: 1px;
+	overflow: hidden;
 }
 .skip-links:focus-within {
+	clip: auto;
+	height: auto;
+	width: auto;
 	left: 1rem;
+	padding: .8rem;
 }
 .skip-link {
 	display: inline-block;
@@ -2032,14 +2058,35 @@ Media Queries
 .responsive-search{
 	width: 100%;
 	margin-top: 0;
-	background: #000;
+	background: transparent;
 }
-.responsive-search .search-form{
+.site-header .responsive-search{
+	display: none;
+}
+.sb-slidebar .responsive-search{
+	background: transparent;
+	padding: 0;
+}
+.sb-slidebar .responsive-search .search-form{
 	max-width: 22.4rem;
-	height: 0;
+	height: auto;
 	clear: both;
 	float: none;
 	margin:0 auto;
+}
+.sb-slidebar .responsive-search input[type="search"]{
+	background: none;
+	border: none;
+	box-shadow: none;
+	color: #fff;
+	padding: 1.2rem 0 .9rem 2rem;
+}
+.sb-slidebar .responsive-search .search-submit{
+	font-family: 'rebanfont';
+	background: none;
+	border: none;
+	width: auto;
+	padding: 1.2rem 1.2rem 0 0;
 }
 .sb-slidebar.sb-left{
 	border-right: .4rem solid DeepPink;
@@ -2436,9 +2483,14 @@ ol.credit-full-sources li p {
 .topbillboard {
 	margin: 2rem 0!important;
 	display: block;
-	position: relative;
-	width: 100vw;
-	left: calc(-50vw + 50%);
+    position: relative;
+    width: 100vw;
+    left: calc(-50vw + 50%);
+    background-color: #fff;
+}
+.topbillboard > div[id^="div-gpt-ad"],
+.topbillboard iframe {
+    background-color: #fff;
 }
 .blog-posts span {
     font-size: 1.6rem;

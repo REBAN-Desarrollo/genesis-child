@@ -43,16 +43,59 @@ add_action('genesis_before', 'sb_site_open');
  */
 function sb_side_bar_widgets() {
     echo '</div>';
-    if (is_active_sidebar('sb-sidebar-left') || is_active_sidebar('sb-sidebar-right')) {
-        genesis_widget_area('sb-sidebar-left', array(
-            'before' => '<div class="sb-slidebar sb-left widget-area sb-menu" role="complementary" aria-label="Menu lateral izquierdo">',
-            'after' => '</div>',
-        ));
-        genesis_widget_area('sb-sidebar-right', array(
-            'before' => '<div class="sb-slidebar sb-right sb-style-overlay widget-area" role="complementary" aria-label="Menu lateral derecho">',
-            'after' => '</div>',
-        ));
-    }
+
+    $render_sidebar = function( $sidebar_id, $classes, $label, $render_default ) {
+        echo '<div id="' . esc_attr( $sidebar_id ) . '" class="' . esc_attr( $classes ) . '" role="complementary" aria-label="' . esc_attr( $label ) . '">';
+
+        call_user_func( $render_default );
+
+        if ( is_active_sidebar( $sidebar_id ) ) {
+            dynamic_sidebar( $sidebar_id );
+        }
+
+        echo '</div>';
+    };
+
+    $render_sidebar(
+        'sb-sidebar-left',
+        'sb-slidebar sb-left widget-area sb-menu',
+        'Menu lateral izquierdo',
+        function () {
+            if ( has_nav_menu( 'primary' ) ) {
+                echo '<nav class="sb-menu" aria-label="Menú principal móvil">';
+                wp_nav_menu(
+                    array(
+                        'theme_location' => 'primary',
+                        'menu_class'     => 'responsive-nav-menu',
+                        'container'      => false,
+                        'depth'          => 2,
+                        'fallback_cb'    => false,
+                    )
+                );
+                echo '</nav>';
+            }
+        }
+    );
+
+    $render_sidebar(
+        'sb-sidebar-right',
+        'sb-slidebar sb-right sb-style-overlay widget-area',
+        'Buscador lateral',
+        function () {
+            $search_id = wp_unique_id( 'sb-search-' );
+            ?>
+            <div class="responsive-search">
+                <form role="search" method="get" class="search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+                    <label for="<?php echo esc_attr( $search_id ); ?>">
+                        <span class="screen-reader-text"><?php esc_html_e( 'Buscar en el sitio', 'mpp' ); ?></span>
+                    </label>
+                    <input id="<?php echo esc_attr( $search_id ); ?>" type="search" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" class="search-input" placeholder="<?php esc_attr_e( 'Buscar en el sitio', 'mpp' ); ?>" />
+                    <input type="submit" class="search-submit" value="<?php esc_attr_e( 'Buscar', 'mpp' ); ?>"/>
+                </form>
+            </div>
+            <?php
+        }
+    );
 }
 add_action('genesis_after', 'sb_side_bar_widgets');
 
@@ -71,8 +114,8 @@ function sb_menu_extras($menu, $args) {
     if ('primary' !== $args->theme_location) {
         return $menu;
     }
-    $menu = '<li class="menu-item mobile-item"><a class="sb-toggle-left" href="#" aria-label="Header menu button"><i class="icon-menu main-menu-icon"></i></a></li>' . $menu;
-    $menu .= '<li class="menu-item mobile-item"><a class="sb-toggle-right search-icon" href="#" aria-label="Header search button"><i class="icon-search main-menu-icon"></i></a></li>';
+    $menu = '<li class="menu-item mobile-item"><a class="sb-toggle-left" href="#" aria-label="Abrir menú principal" aria-expanded="false" aria-controls="sb-sidebar-left"><i class="icon-menu main-menu-icon"></i></a></li>' . $menu;
+    $menu .= '<li class="menu-item mobile-item"><a class="sb-toggle-right search-icon" href="#" aria-label="Abrir buscador" aria-expanded="false" aria-controls="sb-sidebar-right"><i class="icon-search main-menu-icon"></i></a></li>';
     return $menu;
 }
 add_filter('wp_nav_menu_items', 'sb_menu_extras', 10, 2);
@@ -96,7 +139,7 @@ add_filter('genesis_search_button_text', 'sb_search_button_text');
  * Esta función añade botones de menú y búsqueda en el encabezado del sitio.
  */
 function sb_add_header_buttons() {
-    echo '<a class="sb-toggle-left" href="#" aria-label="Header menu button"><i class="icon-menu"></i></a>';
-    echo '<a class="sb-toggle-right search" href="#" aria-label="Header search button"><i class="icon-search"></i></a>';
+    echo '<a class="sb-toggle-left" href="#" aria-label="Abrir menú principal" aria-expanded="false" aria-controls="sb-sidebar-left"><i class="icon-menu"></i></a>';
+    echo '<a class="sb-toggle-right search" href="#" aria-label="Abrir buscador" aria-expanded="false" aria-controls="sb-sidebar-right"><i class="icon-search"></i></a>';
 }
 add_action('genesis_header', 'sb_add_header_buttons');

@@ -18,8 +18,14 @@ function reban_perf_preloads() {
         $file_path = $theme_dir . $relative_path;
         $uri       = $theme_uri . $relative_path;
 
-        if ( file_exists( $file_path ) ) {
-            $uri = add_query_arg( 'v', filemtime( $file_path ), $uri );
+        static $filetimes = array();
+
+        if ( ! array_key_exists( $file_path, $filetimes ) ) {
+            $filetimes[ $file_path ] = file_exists( $file_path ) ? filemtime( $file_path ) : false;
+        }
+
+        if ( false !== $filetimes[ $file_path ] ) {
+            $uri = add_query_arg( 'v', $filetimes[ $file_path ], $uri );
         } elseif ( $fallback_uri ) {
             $uri = $fallback_uri;
         }
@@ -27,8 +33,32 @@ function reban_perf_preloads() {
         return esc_url( $uri );
     };
 
+    $logo_data       = array();
+    $custom_logo_id  = get_theme_mod( 'custom_logo' );
+    $custom_logo_src = $custom_logo_id ? wp_get_attachment_image_src( $custom_logo_id, 'full' ) : false;
+
+    if ( $custom_logo_src ) {
+        $logo_data = $custom_logo_src;
+    } elseif ( get_header_image() ) {
+        $header    = get_custom_header();
+        $logo_data = array(
+            get_header_image(),
+            $header ? (int) $header->width : 0,
+            $header ? (int) $header->height : 0,
+        );
+    } else {
+        $logo_data = array(
+            $versioned_asset( '/images/Logo-OK-circulo-619x110-02.png', '/wp-content/uploads/2023/01/Logo-OK-circulo-619x110-02.png' ),
+            619,
+            110,
+        );
+    }
+
+    $logo_src    = $logo_data[0] ?? '';
+    $logo_width  = isset( $logo_data[1] ) ? (int) $logo_data[1] : 0;
+    $logo_height = isset( $logo_data[2] ) ? (int) $logo_data[2] : 0;
+
     $preloads = array(
-        'logo'          => $versioned_asset( '/images/Logo-OK-circulo-619x110-02.png', '/wp-content/uploads/2023/01/Logo-OK-circulo-619x110-02.png' ),
         'reban_woff2'   => $versioned_asset( '/fonts/rebanfont.woff2' ),
         'poppins_woff2' => $versioned_asset( '/fonts/Poppins-SemiBold.woff2' ),
         'proxima_woff2' => $versioned_asset( '/fonts/ProximaNova-Regular.woff2' ),
@@ -52,7 +82,9 @@ function reban_perf_preloads() {
         ),
     );
     ?>
-        <link rel="preload" href="<?php echo $preloads['logo']; ?>" width="619" height="110" as="image">
+        <?php if ( $logo_src ) : ?>
+            <link rel="preload" href="<?php echo esc_url( $logo_src ); ?>" as="image"<?php echo $logo_width && $logo_height ? ' width="' . esc_attr( $logo_width ) . '" height="' . esc_attr( $logo_height ) . '"' : ''; ?>>
+        <?php endif; ?>
         <link rel="preload" href="<?php echo $preloads['reban_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
         <link rel="preload" href="<?php echo $preloads['poppins_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
         <link rel="preload" href="<?php echo $preloads['proxima_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
@@ -101,9 +133,12 @@ CSS;
 add_filter( 'style_loader_tag', 'reban_perf_async_css', 10, 2 );
 function reban_perf_async_css( $html, $handle ) {
     if ( $handle == CHILD_THEME_NAME ) {
-        $search  = array( "rel='stylesheet' id='$handle-css'", "type='text/css' media='all'" );
-        $replace = array( 'rel="preload"', "as=\"style\" onload=\"this.onload=null;this.rel='stylesheet'\"" );
-        return str_replace( $search, $replace, $html ) . "<noscript>{$html}</noscript>";
+        $async_html = preg_replace(
+            '/media=("|\')all\\1/',
+            'media=$1print$1 onload="this.media=\'all\'"',
+            $html
+        );
+        return $async_html . "<noscript>{$html}</noscript>";
     }
     return $html;
 }

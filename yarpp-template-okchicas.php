@@ -17,8 +17,11 @@ Author: Saad Sarfraz
  * @return array|null Resized image details (url, width, height) or null on failure.
  */
 function my_resize($attach_id = null, $img_url = null, $width, $height, $crop = false) {
-    $width = intval($width);
-    $height = intval($height);
+    $width = absint($width);
+    $height = absint($height);
+    if ( $width <= 0 || $height <= 0 ) {
+        return null;
+    }
 
     // If we have an attachment ID, get the full image src and file path
     if ($attach_id) {

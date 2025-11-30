@@ -160,13 +160,13 @@ function reban_custom_footer() {
     ?>
     <a href="<?php bloginfo('url'); ?>"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/Logo-OK-footer-blanco.png" width="287" height="110" class="footer-logo" loading="lazy" alt="Logo OKChicas footer transparente y blanco"/> </a>
     <ul id="footer-social">
-        <li><a class="social-button-link" href="https://www.facebook.com/OkChicasBlog/" aria-label="Facebook footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-facebook"></i></a></li>
-        <li><a class="social-button-link" href="https://www.instagram.com/okchicas/" aria-label="Instagram footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-instagram"></i></a></li>
-        <li><a class="social-button-link" href="https://www.youtube.com/channel/UC4emviWglNnjU6en1P_e5uQ" aria-label="YouTube footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-youtube"></i></a></li>
-        <li><a class="social-button-link" href="https://www.pinterest.com.mx/okchicas/" aria-label="Pinterest footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-pinterest"></i></a></li>
-        <li><a class="social-button-link" href="https://twitter.com/OkChicasOficial" aria-label="Twitter footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-twitter"></i></a></li>
-        <li><a class="social-button-link" href="mailto:soporte@okchicas.com" aria-label="email footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-mail"></i></a></li>
-        <li><a class="social-button-link" href="https://www.okchicas.com/feed/" aria-label="RSS footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-rss"></i></a></li>
+        <li><a class="social-button-link" href="https://www.facebook.com/OkChicasBlog/" aria-label="Facebook footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-facebook"></i><span class="screen-reader-text">Facebook</span></a></li>
+        <li><a class="social-button-link" href="https://www.instagram.com/okchicas/" aria-label="Instagram footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-instagram"></i><span class="screen-reader-text">Instagram</span></a></li>
+        <li><a class="social-button-link" href="https://www.youtube.com/channel/UC4emviWglNnjU6en1P_e5uQ" aria-label="YouTube footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-youtube"></i><span class="screen-reader-text">YouTube</span></a></li>
+        <li><a class="social-button-link" href="https://www.pinterest.com.mx/okchicas/" aria-label="Pinterest footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-pinterest"></i><span class="screen-reader-text">Pinterest</span></a></li>
+        <li><a class="social-button-link" href="https://twitter.com/OkChicasOficial" aria-label="Twitter footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-twitter"></i><span class="screen-reader-text">Twitter</span></a></li>
+        <li><a class="social-button-link" href="mailto:soporte@okchicas.com" aria-label="email footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-mail"></i><span class="screen-reader-text">Correo</span></a></li>
+        <li><a class="social-button-link" href="https://www.okchicas.com/feed/" aria-label="RSS footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-rss"></i><span class="screen-reader-text">RSS</span></a></li>
     </ul>
     <?php
 }
@@ -192,7 +192,7 @@ function genesis_user_footer() {
                     ));
                 ?>
         </div>
-        <div id="copyright"><p>&copy;<?php echo date('o'); ?> Grupo Reban. Todos los derechos reservados</p></div>
+        <div id="copyright"><p>&copy;<?php echo date_i18n('Y'); ?> Grupo Reban. Todos los derechos reservados</p></div>
         <div id="footer-menu">
                 <?php
                     wp_nav_menu(array(
