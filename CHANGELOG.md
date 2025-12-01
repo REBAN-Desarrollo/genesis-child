@@ -2,6 +2,11 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.14
+
+- Header: el contenedor del logo ahora usa flex/gap para centrar el PNG de 110px sin recortes raros y baja el padding a .5rem en movil.
+- CSS critico (global y single) replica el mismo ajuste para que el header se vea consistente en el primer render antes de que cargue style.css.
+
 ## 25.12.13
 
 - Se ajusta el header para dar un padding ligero arriba/abajo al logo (img máx 110px) y centrarlo en desktop, replicado en el critical CSS global/single para que no haya huecos raros al cargar.
@@ -99,6 +104,10 @@ Todas las notas de version del tema okchicas.com.
 
 - Restauramos el handle `jquery` de WordPress al eliminar su desregistracion en cleanup, para que Slidebars y HC-Sticky vuelvan a inicializarse.
 - `js/all.js` ahora solo incluye los plugins (Slidebars, Headroom, HC-Sticky) y se encola dependiente de `jquery` en footer, sin la copia embebida de jQuery.
+
+## 25.12.01
+
+- El preload de la imagen destacada ahora reutiliza el mismo `srcset/sizes` que el `<picture>` y detecta tanto `.webp` como `.jpg.webp`, evitando descargas duplicadas cuando EWWW/Cloudflare sirven WebP.
 
 ## 25.11.30
 

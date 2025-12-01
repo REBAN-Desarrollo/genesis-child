@@ -931,8 +931,13 @@ a.alignright img, img.alignright, .wp-caption.alignright {
 	padding: 0;
 }
 .site-header .wrap {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	overflow: hidden;
 	padding: .8rem 0;
+	gap: 1rem;
+	flex-wrap: wrap;
 }
 .mpp-home .site-header .wrap {
 	border: none;
@@ -960,11 +965,18 @@ a.alignright img, img.alignright, .wp-caption.alignright {
 	height: auto;
 	width: auto;
 }
+.site-title picture {
+	display: block;
+	line-height: 0;
+}
 .custom-title {
 	font-weight: bold;
 	color: #00aeef;
 }
 .site-title a, .site-title a:hover {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
     color: var(--color-primary);
     text-decoration: none;
 }
@@ -1817,6 +1829,10 @@ Media Queries
 	}
 	.wrap {
 		max-width: 100%;
+	}
+	.site-header .wrap {
+		padding: .5rem 0;
+		gap: .75rem;
 	}
 	/* Esconde sidebar */
 	.sidebar, .wrapper-sticky {
