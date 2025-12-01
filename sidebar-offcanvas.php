@@ -83,7 +83,8 @@ add_action( 'genesis_after', 'sidebar_render_offcanvas' );
  * @return string
  */
 function sidebar_search_button_text( $text ) {
-    return esc_attr( '&#xe900;' );
+    // Prefer texto descriptivo para accesibilidad en lugar de icono.
+    return esc_html__( 'Buscar', 'mpp' );
 }
 add_filter( 'genesis_search_button_text', 'sidebar_search_button_text' );
 

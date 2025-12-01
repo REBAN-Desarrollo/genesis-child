@@ -2,7 +2,7 @@
 //* Child theme (do not remove)
 define( 'CHILD_THEME_NAME', __( 'reban', 'mpp' ) );
 define( 'CHILD_THEME_URL', 'http://www.okchicas.com/' );
-define( 'CHILD_THEME_VERSION', '240518a' );
+define( 'CHILD_THEME_VERSION', '25.12.26' );
 
 require_once get_stylesheet_directory() . '/inc/setup.php';
 require_once get_stylesheet_directory() . '/inc/cleanup.php';

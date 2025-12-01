@@ -201,20 +201,149 @@ function reban_custom_search_text( $text ) {
     2 - Hide Instagram Captions
 */
 // 1 - Youtube Videos remove show info related etc
-function custom_youtube_settings( $code ) {
-    if ( strpos( $code, 'youtube.com' ) !== false || strpos( $code, 'youtu.be' ) !== false ) {
-        $return = preg_replace( "@src=(['\"])?([^'\">\\s]*)@", "src=$1$2&cc_lang_pref=es&hl=es&showinfo=0&rel=0&autohide=1&modestbranding=1&iv_load_policy=3", $code );
-        return $return;
+function custom_youtube_settings( $html, $url = '', $attr = array(), $post_id = 0 ) {
+    $haystack = $url ? $url : $html;
+
+    if ( false === stripos( $haystack, 'youtube.com' ) && false === stripos( $haystack, 'youtu.be' ) ) {
+        return $html;
     }
-    return $code;
+
+    if ( ! $url && preg_match( '/\bsrc\s*=\s*(["\']?)(.*?)\\1/i', $html, $matches ) ) {
+        $url = $matches[2];
+    }
+
+    if ( ! $url ) {
+        return $html;
+    }
+
+    if ( 0 === strpos( $url, '//' ) ) {
+        $url = 'https:' . $url;
+    }
+
+    $parts = wp_parse_url( $url );
+
+    if ( empty( $parts['host'] ) ) {
+        return $html;
+    }
+
+    $host          = strtolower( $parts['host'] );
+    $allowed_hosts = array(
+        'youtube.com',
+        'www.youtube.com',
+        'm.youtube.com',
+        'youtu.be',
+        'www.youtu.be',
+        'youtube-nocookie.com',
+        'www.youtube-nocookie.com',
+    );
+
+    if ( ! in_array( $host, $allowed_hosts, true ) ) {
+        return $html;
+    }
+
+    $url = set_url_scheme( $url, 'https' );
+
+    if ( 'youtu.be' === $host || 'www.youtu.be' === $host ) {
+        $video_id = empty( $parts['path'] ) ? '' : ltrim( $parts['path'], '/' );
+
+        if ( '' === $video_id ) {
+            return $html;
+        }
+
+        $url = 'https://www.youtube.com/embed/' . rawurlencode( $video_id );
+    }
+
+    $url = add_query_arg(
+        array(
+            'cc_lang_pref'   => 'es',
+            'hl'             => 'es',
+            'showinfo'       => '0',
+            'rel'            => '0',
+            'autohide'       => '1',
+            'modestbranding' => '1',
+            'iv_load_policy' => '3',
+        ),
+        $url
+    );
+
+    $safe_url = wp_http_validate_url( $url );
+
+    if ( ! $safe_url ) {
+        return $html;
+    }
+
+    $safe_url = esc_url( $safe_url );
+
+    $sanitized_html = preg_replace_callback(
+        '/\bsrc\s*=\s*(["\']?)(.*?)\\1/i',
+        function () use ( $safe_url ) {
+            return 'src="' . $safe_url . '"';
+        },
+        $html,
+        1
+    );
+
+    $allowed = wp_kses_allowed_html( 'post' );
+    $allowed['iframe'] = array(
+        'src'             => true,
+        'width'           => true,
+        'height'          => true,
+        'frameborder'     => true,
+        'allow'           => true,
+        'allowfullscreen' => true,
+        'loading'         => true,
+        'title'           => true,
+        'referrerpolicy'  => true,
+    );
+
+    return wp_kses( $sanitized_html ? $sanitized_html : $html, $allowed );
 }
-add_filter( 'embed_handler_html', 'custom_youtube_settings' );
-add_filter( 'embed_oembed_html', 'custom_youtube_settings' );
+add_filter( 'embed_handler_html', 'custom_youtube_settings', 10, 4 );
+add_filter( 'embed_oembed_html', 'custom_youtube_settings', 10, 4 );
 // 2 - Hide Instagram Captions
 function custom_instagram_settings( $code ) {
     if ( strpos( $code, 'instagr.am' ) !== false || strpos( $code, 'instagram.com' ) !== false ) { // if instagram embed
-        $return = preg_replace( "@data-instgrm-captioned@", '', $code ); // remove caption class
-        return $return;
+        $code = preg_replace( "@data-instgrm-captioned@", '', $code ); // remove caption class
+
+        $code = preg_replace_callback(
+            '/<script[^>]+src=(["\']?)([^"\'>\\s]+)\\1[^>]*><\\/script>/i',
+            static function ( $matches ) {
+                $src = $matches[2];
+
+                if ( false !== stripos( $src, '://www.instagram.com/embed.js' ) || 0 === strpos( $src, '//www.instagram.com/embed.js' ) ) {
+                    return $matches[0];
+                }
+
+                return '';
+            },
+            $code
+        );
+
+        $allowed = wp_kses_allowed_html( 'post' );
+        $allowed['iframe']    = array(
+            'src'             => true,
+            'width'           => true,
+            'height'          => true,
+            'frameborder'     => true,
+            'allow'           => true,
+            'allowfullscreen' => true,
+            'loading'         => true,
+            'title'           => true,
+            'referrerpolicy'  => true,
+        );
+        $allowed['blockquote'] = array(
+            'class'                 => true,
+            'data-instgrm-permalink'=> true,
+            'data-instgrm-version'  => true,
+            'style'                 => true,
+        );
+        $allowed['script']    = array(
+            'src'   => true,
+            'async' => true,
+            'defer' => true,
+        );
+
+        return wp_kses( $code, $allowed );
     }
     return $code;
 }
@@ -226,7 +355,7 @@ add_filter( 'embed_oembed_html', 'custom_instagram_settings' );
 add_action( 'genesis_footer', 'reban_custom_footer', 5 );
 function reban_custom_footer() {
     ?>
-    <a href="<?php bloginfo('url'); ?>"><img src="<?php echo get_stylesheet_directory_uri(); ?>/images/Logo-OK-footer-blanco.png" width="287" height="110" class="footer-logo" loading="lazy" alt="Logo OKChicas footer transparente y blanco"/> </a>
+    <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><img src="<?php echo esc_url( get_stylesheet_directory_uri() ); ?>/images/Logo-OK-footer-blanco.png" width="287" height="110" class="footer-logo" loading="lazy" alt="<?php echo esc_attr( 'Logo OKChicas footer transparente y blanco' ); ?>"/> </a>
     <ul id="footer-social">
         <li><a class="social-button-link" href="https://www.facebook.com/OkChicasBlog/" aria-label="Facebook footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-facebook"></i><span class="screen-reader-text">Facebook</span></a></li>
         <li><a class="social-button-link" href="https://www.instagram.com/okchicas/" aria-label="Instagram footer icon" target="_blank" rel="nofollow noopener noreferrer"><i class="icon-instagram"></i><span class="screen-reader-text">Instagram</span></a></li>
@@ -256,17 +385,17 @@ function genesis_user_footer() {
                     wp_nav_menu(array(
                         'theme_location' => 'footer-menu',
                         'menu_class' => '',
-                        'fallback_cb' => 'false'
+                        'fallback_cb' => false,
                     ));
                 ?>
         </div>
-        <div id="copyright"><p>&copy;<?php echo date_i18n('Y'); ?> Grupo Reban. Todos los derechos reservados</p></div>
+        <div id="copyright"><p>&copy;<?php echo esc_html( date_i18n('Y') ); ?> Grupo Reban. Todos los derechos reservados</p></div>
         <div id="footer-menu">
                 <?php
                     wp_nav_menu(array(
                         'theme_location' => 'secondary',
                         'menu_class' => '',
-                        'fallback_cb' => 'false'
+                        'fallback_cb' => false,
                     ));
                 ?>
         </div>
@@ -294,7 +423,7 @@ function reban_custom_gravatar_size($size) {
 //* Customize the author box title
 add_filter( 'genesis_author_box_title', 'reban_custom_author_title' );
 function reban_custom_author_title() {
-        return get_the_author();
+        return esc_html( get_the_author() );
 }
 
 add_filter( 'genesis_author_box', 'be_author_box', 10, 6 );
@@ -318,13 +447,13 @@ function be_author_box( $output, $context, $pattern, $gravatar, $title, $descrip
                 $output .= get_avatar( get_the_author_meta( 'email' ), 120 );
                 $output .= '</div><!-- .left -->';
                 $output .= '<div class="alignright">';
-                $name = get_the_author();
+                $name = esc_html( get_the_author() );
                 $title = get_the_author_meta( 'title' );
-                        if( !empty( $title ) )
-                                $name .= ', ' . $title;
+                        if ( ! empty( $title ) )
+                                $name .= ', ' . esc_html( $title );
                 $output .= '<h2 class="title">'. $name;
                 $output .= '</h2>';
-                $output .= '<p class="desc">' . get_the_author_meta( 'description' ) . '</p>';
+                $output .= '<p class="desc">' . wp_kses_post( get_the_author_meta( 'description' ) ) . '</p>';
                 $output .= '</div>';
                 $output .= '</div><!-- .author-box -->';
         return $output;

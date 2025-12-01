@@ -2,6 +2,26 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.26
+
+- CSS crítico (home/blog, páginas y single) se sirve desde archivos externos `critical-*.css` con `filemtime` para cache busting y rutas de fuentes relativas al child theme en vez de paths hardcodeados.
+- Nuevo helper `reban_perf_versioned_asset()` reutiliza el versionado de assets en preload de fuentes, logos y hojas críticas sin repetir closures.
+
+## 25.12.25
+
+- Los embeds de YouTube ahora validan el host permitido, normalizan el `src` a HTTPS (incluyendo shortlinks `youtu.be`) y escapan la URL antes de reimprimirla en los filtros `embed_*` para evitar inyecciones.
+
+## 25.12.24
+
+- Seguridad: sanitizado de embeds de YouTube/Instagram con `wp_kses` y whitelist de hosts/atributos.
+- Rendimiento/seguridad: se elimina el `ob_start` de WPP y se usa `script_loader_tag` para async seguro.
+- Sanitizado: salidas de footer/author box y menus escapan datos dinámicos.
+- Version del tema sincronizada (`CHILD_THEME_VERSION` y style.css) a 25.12.24.
+- Accesibilidad: boton de busqueda de Genesis usa texto descriptivo en lugar de glifo.
+- Tooling: se agrega PHPCS (WPCS) con hook `pre-commit` opcional (`git config core.hooksPath .githooks`).
+- Docs: AGENTS documenta el uso obligatorio del prefijo `reban_` en funciones/hooks nuevos.
+- WordPress Popular Posts: `wpp-js` va al footer para aligerar el head.
+
 ## 25.12.23
 
 - Headroom movil lee el breakpoint dentro de `requestAnimationFrame` para agrupar lecturas/escrituras de layout y evitar reflows forzados al alternar clases del header.

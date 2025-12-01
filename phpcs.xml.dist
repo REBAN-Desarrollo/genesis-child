@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset name="okchicas-phpcs">
+    <description>WordPress coding standards for the okchicas.com child theme.</description>
+
+    <arg name="extensions" value="php"/>
+    <arg name="basepath" value="."/>
+
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/.git/*</exclude-pattern>
+
+    <file>functions.php</file>
+    <file>inc</file>
+    <file>sidebar-offcanvas.php</file>
+    <file>home.php</file>
+    <file>archive.php</file>
+    <file>search.php</file>
+    <file>single.php</file>
+    <file>yarpp-template-okchicas.php</file>
+
+    <rule ref="WordPress"/>
+    <rule ref="WordPress-Docs"/>
+</ruleset>
