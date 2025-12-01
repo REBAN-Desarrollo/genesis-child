@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Run PHPCS on staged PHP files (if available) before committing.
+
+set -e
+
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.php$' || true)
+
+if [ -z "$FILES" ]; then
+    exit 0
+fi
+
+PHPCS_BIN=""
+
+if [ -x "./vendor/bin/phpcs" ]; then
+    PHPCS_BIN="./vendor/bin/phpcs"
+elif command -v phpcs >/dev/null 2>&1; then
+    PHPCS_BIN="$(command -v phpcs)"
+fi
+
+if [ -z "$PHPCS_BIN" ]; then
+    echo "phpcs not found; skipping PHP lint for this commit."
+    exit 0
+fi
+
+echo "Running phpcs on staged PHP files..."
+"$PHPCS_BIN" --standard=phpcs.xml.dist $FILES
