@@ -2,9 +2,36 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.22
+
+- CSS: el line-height global vuelve a 1.6 y se eliminan los `line-height: 0` de contenedores para heredar tipografía consistente sin re-declarar en cada bloque.
+- CSS: colores sueltos (#222, #333, #F83371, #AC0D12, #999) ahora viven en tokens (`--color-surface-contrast`, `--color-highlight`, etc.) y los textos/enlaces se alinean al sistema de color.
+- Accesibilidad: se añade `prefers-reduced-motion` para acortar animaciones/transiciones y un estado `:focus-visible` dedicado en los menús de navegación.
+
+## 25.12.21
+
+- CSS critico: se agrega bloque dedicado para paginas estaticas (is_page, p. ej. Acerca de) separado del global de home/blog.
+
+## 25.12.20
+
+- CSS: se actualiza el índice y los breakpoints listados para reflejar las media queries reales y se eliminan los encabezados vacíos de plugins.
+- CSS: se estandarizan los cortes a 1200/992/600/480 (más un `min-width:600` puntual) para usar una escala corta alineada al mercado sin sumar breakpoints extra.
+- CSS: se centraliza el azul de acento en `--color-accent` y se limpian reglas vacías/duplicadas (`.fa.pull-right`, hover de YARPP) para reducir ruido y mantener consistencia cromática.
+
+## 25.12.02
+
+- El off-canvas cambia el prefijo abreviado `sb` por `sidebar-*` en IDs, clases y template (incluyendo el contenedor `#sidebar-site` y los toggles de header/menu).
+- `sb-offcanvas.php` se renombra a `sidebar-offcanvas.php` y se actualizan `functions.php`, JS y CSS (principal y crítico) para usar el nuevo `sidebar-offcanvas-left` como `aria-controls`/`DEFAULT_SIDEBAR_ID`.
+- Las hojas críticas y la README de JS reflejan el nuevo naming y el sidebar derecho legacy se oculta vía `#sidebar-offcanvas-right`.
+
+## 25.12.19
+
+- Las imagenes de contenido que llegan como `.jpg.webp` (Cloudflare/EWWW) ahora buscan el archivo original (.jpg/.png) en uploads para rellenar `width`/`height` y evitar CLS con fotos centradas antiguas sin dimensiones.
+
 ## 25.12.18
 
 - Se agregan `preconnect` a los hosts de terceros m\u00e1s usados (Cloudflare, GTM/GA y ScorecardResearch) para reducir la latencia de conexi\u00f3n antes del LCP.
+- CSS critico: se recorta y separa el bloque global y de single (header/hero/primer fold) para bajar peso inline sin afectar el primer render.
 
 ## 25.12.17
 
@@ -167,3 +194,5 @@ Todas las notas de version del tema okchicas.com.
 - Hooks de cabecera y pie que insertan scripts propios, limpian dependencias innecesarias y personalizan el footer.
 - Registro de menus y sidebars adicionales (header, footer y secciones laterales) via `sidebar.php` (antes `sb-functions.php`).
 - Mejoras de contenido: fechas en espanol, etiquetas accesibles en formularios, incrustaciones ajustadas de YouTube/Instagram y botones de navegacion/autor personalizados.
+
+

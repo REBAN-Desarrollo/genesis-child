@@ -4,9 +4,9 @@
  */
 (() => {
   const SLIDEBAR_ACTIVE_CLASS = 'is-open';
-  const LOCK_CLASS = 'sb-locked';
-  const SLIDEBAR_TEMPLATE_ID = 'sb-slidebar-template';
-  const DEFAULT_SIDEBAR_ID = 'sb-sidebar-left';
+  const LOCK_CLASS = 'sidebar-locked';
+  const SLIDEBAR_TEMPLATE_ID = 'sidebar-slidebar-template';
+  const DEFAULT_SIDEBAR_ID = 'sidebar-offcanvas-left';
   const SCROLLBAR_VAR = '--scrollbar-compensation';
   const HEADROOM_BREAKPOINT = 927;
   const HEADROOM_OFFSET = 40;
@@ -16,12 +16,12 @@
   const state = {
     activeSidebar: null,
     overlay: null,
-    siteContainer: document.getElementById('sb-site'),
+    siteContainer: document.getElementById('sidebar-site'),
     sidebars: new Map(),
   };
 
   function cacheSidebars() {
-    document.querySelectorAll('.sb-slidebar[id]').forEach((sidebar) => {
+    document.querySelectorAll('.sidebar-slidebar[id]').forEach((sidebar) => {
       state.sidebars.set(sidebar.id, sidebar);
       sidebar.setAttribute('aria-hidden', 'true');
     });
@@ -57,7 +57,7 @@
     }
 
     const overlay = document.createElement('div');
-    overlay.className = 'sb-overlay';
+    overlay.className = 'sidebar-overlay';
     overlay.setAttribute('aria-hidden', 'true');
     overlay.addEventListener('click', closeSidebar);
 
@@ -164,7 +164,7 @@
       return;
     }
 
-    const toggleSelector = '.sb-toggle-left, .sb-toggle-right, .sb-open-left, .sb-open-right, .sb-close';
+    const toggleSelector = '.sidebar-toggle-left, .sidebar-toggle-right, .sidebar-open-left, .sidebar-open-right, .sidebar-close';
     const defaultSidebarId =
       state.sidebars.size === 1
         ? state.sidebars.keys().next().value
@@ -193,7 +193,7 @@
           return;
         }
 
-        if (state.activeSidebar && !event.target.closest('.sb-slidebar')) {
+        if (state.activeSidebar && !event.target.closest('.sidebar-slidebar')) {
           closeSidebar();
         }
       });

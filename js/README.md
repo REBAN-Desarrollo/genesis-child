@@ -1,10 +1,10 @@
 # JS sin jQuery
 
 ## Slidebar
-- Usa `.sb-slidebar` con un `id` (por defecto `sb-sidebar-left`).
-- El HTML vive en un `<template id="sb-slidebar-template">` y se inserta al primer click del toggle, asi que no aparece en el DOM inicial.
-- Los toggles (`.sb-toggle-left`, `.sb-open-left`, etc.) necesitan `aria-controls` apuntando al sidebar; si sólo hay uno se asigna automáticamente.
-- La clase `is-open` vive en el sidebar, el body/html se bloquean con `sb-locked` y el overlay `sb-overlay` se añade en runtime.
+- Usa `.sidebar-slidebar` con un `id` (por defecto `sidebar-offcanvas-left`).
+- El HTML vive en un `<template id="sidebar-slidebar-template">` y se inserta al primer click del toggle, asi que no aparece en el DOM inicial.
+- Los toggles (`.sidebar-toggle-left`, `.sidebar-open-left`, etc.) necesitan `aria-controls` apuntando al sidebar; si sólo hay uno se asigna automáticamente.
+- La clase `is-open` vive en el sidebar, el body/html se bloquean con `sidebar-locked` y el overlay `sidebar-overlay` se añade en runtime.
 - `Escape`, clic en el overlay o en el contenido cierran la barra; los toggles de búsqueda enfocan el primer `input[type="search"]` dentro del sidebar.
 
 ## Headroom (header móvil)
