@@ -2,10 +2,24 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.18
+
+- Se agregan `preconnect` a los hosts de terceros m\u00e1s usados (Cloudflare, GTM/GA y ScorecardResearch) para reducir la latencia de conexi\u00f3n antes del LCP.
+
+## 25.12.17
+
+- Headroom movil se habilita en `requestAnimationFrame`, agrupa lecturas/escrituras de scroll y evita reflows forzados al iniciar o cambiar de breakpoint.
+
+## 25.12.16
+
+- Las imagenes del contenido ahora rellenan automaticamente `width`/`height` cuando faltan (usando metadata del adjunto o el archivo en uploads) para que el navegador reserve espacio y evitar CLS con fotos centradas sin tamano.
+- El toggle del menu movil se imprime con `role="button"` y un tamaño fijo (CSS inline + hoja principal) para que el icono no provoque layout shift al cargar la fuente.
+
 ## 25.12.15
 
 - Slidebar: al bloquear el scroll se calcula el ancho de la barra y se aplica padding compensado para que el body no se mueva al abrir/cerrar el menú.
-- Header móvil: el ícono de menú se fija al lado izquierdo con el espaciado de la escala de diseño para que no quede centrado.
+- Header móvil: el ícono de menú se fija al lado izquierdo con el espaciado de la escala de diseño, gap 0 y centrado vertical junto al logo.
+- Header: padding top/bottom afinado a 5px para que el logo quede a 5px de la línea rosa superior y del borde inferior.
 
 ## 25.12.14
 

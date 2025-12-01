@@ -86,10 +86,55 @@ function reban_perf_preloads() {
         <link rel="preload" href="<?php echo $preloads['poppins_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
         <link rel="preload" href="<?php echo $preloads['proxima_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
         
+        <link rel="preconnect" href="https://ajax.cloudflare.com" crossorigin>
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+        <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+        <link rel="preconnect" href="https://sb.scorecardresearch.com" crossorigin>
         <link rel="dns-prefetch" href="//ajax.cloudflare.com/">
         <link rel="dns-prefetch" href="//googletagmanager.com">
         <link rel="dns-prefetch" href="//google-analytics.com">
         <link rel="dns-prefetch" href="//sb.scorecardresearch.com">
+        <style id="sb-toggle-cls-fix">
+            @media (max-width: 944px) {
+                .site-header .wrap {
+                    position: relative;
+                }
+                .site-header .wrap > a.sb-toggle-left,
+                .site-header .wrap > a.sb-toggle-right {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 3.6rem;
+                    height: 3.6rem;
+                    padding: 0.5rem;
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    line-height: 1;
+                }
+                .site-header .wrap > a.sb-toggle-left {
+                    left: 1rem;
+                }
+                .site-header .wrap > a.sb-toggle-right {
+                    right: 0.1rem;
+                }
+                .nav-primary .menu li.mobile-item > a.sb-toggle-left {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 3.6rem;
+                    height: 3.6rem;
+                    padding: 0.5rem;
+                }
+            }
+            .sb-toggle-left .icon-menu,
+            .sb-toggle-right .icon-menu {
+                display: block;
+                line-height: 1;
+                width: 1em;
+                height: 1em;
+            }
+        </style>
     <?php
     if ( is_singular( 'post' ) ) {
         return;
@@ -157,5 +202,72 @@ function add_async_attribute_to_wpp_js() {
             );
             return $html;
         }
+    );
+}
+
+// Add missing width/height to inline images so the browser can reserve space and avoid CLS.
+add_filter( 'the_content', 'reban_perf_fill_image_dimensions', 15 );
+function reban_perf_fill_image_dimensions( $content ) {
+    if ( is_admin() || ! is_singular() || stripos( $content, '<img' ) === false ) {
+        return $content;
+    }
+
+    $uploads = wp_upload_dir();
+
+    return preg_replace_callback(
+        '/<img\s+([^>]*?)\/?>/i',
+        function ( $matches ) use ( $uploads ) {
+            $attributes = trim( $matches[1] );
+            $has_width  = preg_match( '/\bwidth\s*=\s*/i', $attributes );
+            $has_height = preg_match( '/\bheight\s*=\s*/i', $attributes );
+
+            if ( $has_width && $has_height ) {
+                return $matches[0];
+            }
+
+            if ( ! preg_match( '/\bsrc\s*=\s*(["\'])(.*?)\\1/i', $attributes, $src_match ) ) {
+                return $matches[0];
+            }
+
+            $src    = $src_match[2];
+            $width  = 0;
+            $height = 0;
+
+            if ( ! empty( $uploads['baseurl'] ) && ! empty( $uploads['basedir'] ) && 0 === strpos( $src, $uploads['baseurl'] ) ) {
+                $relative_path = ltrim( str_replace( $uploads['baseurl'], '', $src ), '/' );
+                $local_path    = trailingslashit( $uploads['basedir'] ) . $relative_path;
+
+                if ( file_exists( $local_path ) ) {
+                    $image_size = @getimagesize( $local_path );
+                    if ( $image_size ) {
+                        $width  = (int) $image_size[0];
+                        $height = (int) $image_size[1];
+                    }
+                }
+            }
+
+            if ( ( ! $width || ! $height ) && preg_match( '/wp-image-(\d+)/', $attributes, $id_match ) ) {
+                $meta = wp_get_attachment_metadata( (int) $id_match[1] );
+                if ( $meta && ! empty( $meta['width'] ) && ! empty( $meta['height'] ) ) {
+                    $width  = (int) $meta['width'];
+                    $height = (int) $meta['height'];
+                }
+            }
+
+            if ( ! $width || ! $height ) {
+                return $matches[0];
+            }
+
+            if ( ! $has_width ) {
+                $attributes .= ' width="' . esc_attr( $width ) . '"';
+            }
+
+            if ( ! $has_height ) {
+                $attributes .= ' height="' . esc_attr( $height ) . '"';
+            }
+
+            return '<img ' . trim( $attributes ) . ' />';
+        },
+        $content
     );
 }

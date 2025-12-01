@@ -213,13 +213,19 @@
     }
 
     let enabled = false;
+    let enableScheduled = false;
+    let lastViewportIsMobile = null;
     let lastY = 0;
     let pendingY = 0;
     let ticking = false;
     let resizeTimer;
 
+    const readScrollY = () => window.scrollY || window.pageYOffset;
+
     const reset = () => {
       header.classList.remove('headroom', 'bajando', 'subiendo', 'noesarriba', 'topando');
+      lastY = 0;
+      pendingY = 0;
     };
 
     const update = (currentY) => {
@@ -278,31 +284,50 @@
     };
 
     const enable = () => {
-      if (enabled) {
+      if (enabled || enableScheduled) {
         return;
       }
 
-      pendingY = window.scrollY;
-      lastY = pendingY;
-      enabled = true;
-      header.classList.add('headroom');
-      scheduleUpdate();
-      window.addEventListener('scroll', onScroll, { passive: true });
+      enableScheduled = true;
+
+      window.requestAnimationFrame(() => {
+        enableScheduled = false;
+
+        if (enabled) {
+          return;
+        }
+
+        const startY = readScrollY();
+        pendingY = startY;
+        lastY = startY;
+        enabled = true;
+        header.classList.add('headroom');
+        scheduleUpdate();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      });
     };
 
     const disable = () => {
-      if (!enabled) {
+      if (!enabled && !enableScheduled) {
         return;
       }
 
       enabled = false;
+      enableScheduled = false;
       ticking = false;
       window.removeEventListener('scroll', onScroll);
       reset();
     };
 
     const applyBreakpoint = () => {
-      if (window.innerWidth <= HEADROOM_BREAKPOINT) {
+      const isMobile = window.innerWidth <= HEADROOM_BREAKPOINT;
+      if (isMobile === lastViewportIsMobile) {
+        return;
+      }
+
+      lastViewportIsMobile = isMobile;
+
+      if (isMobile) {
         enable();
       } else {
         disable();

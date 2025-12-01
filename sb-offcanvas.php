@@ -91,7 +91,7 @@ add_filter( 'genesis_search_button_text', 'sidebar_search_button_text' );
  * Anadir toggle de menu en header y menu primario.
  */
 function sidebar_add_header_buttons() {
-    echo '<a class="sb-toggle-left" href="#" aria-label="Abrir menu principal" aria-expanded="false" aria-controls="sb-sidebar-left"><i class="icon-menu"></i></a>';
+    echo '<a class="sb-toggle-left" href="#" aria-label="Abrir menu principal" aria-expanded="false" aria-controls="sb-sidebar-left" role="button"><i class="icon-menu"></i></a>';
 }
 add_action( 'genesis_header', 'sidebar_add_header_buttons' );
 
@@ -100,7 +100,7 @@ function sidebar_menu_extras( $menu, $args ) {
         return $menu;
     }
 
-    $menu = '<li class="menu-item mobile-item"><a class="sb-toggle-left" href="#" aria-label="Abrir menu principal" aria-expanded="false" aria-controls="sb-sidebar-left"><i class="icon-menu main-menu-icon"></i></a></li>' . $menu;
+    $menu = '<li class="menu-item mobile-item"><a class="sb-toggle-left" href="#" aria-label="Abrir menu principal" aria-expanded="false" aria-controls="sb-sidebar-left" role="button"><i class="icon-menu main-menu-icon"></i></a></li>' . $menu;
     return $menu;
 }
 add_filter( 'wp_nav_menu_items', 'sidebar_menu_extras', 10, 2 );

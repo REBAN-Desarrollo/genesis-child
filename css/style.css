@@ -936,8 +936,8 @@ a.alignright img, img.alignright, .wp-caption.alignright {
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
-	padding: .8rem 0;
-	gap: 1rem;
+	padding: var(--spacing-xs) 0;
+	gap: 0;
 	flex-wrap: wrap;
 }
 .mpp-home .site-header .wrap {
@@ -1832,8 +1832,10 @@ Media Queries
 		max-width: 100%;
 	}
 	.site-header .wrap {
-		padding: .5rem 0;
-		gap: .75rem;
+		padding: var(--spacing-xs) 0;
+		gap: 0;
+		position: relative;
+		align-items: center;
 	}
 	/* Esconde sidebar */
 	.sidebar, .wrapper-sticky {
@@ -1899,12 +1901,24 @@ Media Queries
 		margin: 0;
 	}
 	.site-header .wrap > a {
-		display:block;
+		display: inline-flex;
 		position:absolute;
 		font-size: 2.5rem;
 		color: var(--color-text);
-		padding: 1.5rem 1.25rem 1.2rem;
-		top: 0;
+		padding: var(--spacing-xs);
+		top: 50%;
+		transform: translateY(-50%);
+		align-items: center;
+		justify-content: center;
+		width: 3.6rem;
+		height: 3.6rem;
+		line-height: 1;
+	}
+	.site-header .wrap > a i {
+		display: block;
+		line-height: 1;
+		width: 1em;
+		height: 1em;
 	}
 	.site-header .wrap > a.sb-toggle-left {
 		left: var(--spacing-sm);
@@ -1913,6 +1927,14 @@ Media Queries
 	.site-header .wrap > a.sb-toggle-right {
 		right: .1rem;
 		/* font-size: 2.3rem; */
+	}
+	.nav-primary .menu li.mobile-item > a.sb-toggle-left {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 3.6rem;
+		height: 3.6rem;
+		padding: var(--spacing-xs);
 	}
 	.author-box .alignleft{
 		width: 20%;	
