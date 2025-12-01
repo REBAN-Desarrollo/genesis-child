@@ -928,6 +928,7 @@ a.alignright img, img.alignright, .wp-caption.alignright {
 	position: relative;
 	border-top: .3rem solid var(--color-primary);
 	background-color: var(--color-surface);
+	padding: 0;
 }
 .site-header .wrap {
 	overflow: hidden;
@@ -949,7 +950,17 @@ a.alignright img, img.alignright, .wp-caption.alignright {
 .header-image .title-area {
 	padding: 0;
 }
-.site-title {line-height: 3.8rem;margin: .5rem 0;}
+.site-title {
+	line-height: 1;
+	margin: 0;
+}
+.site-title img {
+	display: block;
+	margin: 0 auto;
+	max-height: 11rem;
+	height: auto;
+	width: auto;
+}
 .custom-title {
 	font-weight: bold;
 	color: #00aeef;
@@ -987,7 +998,7 @@ a.alignright img, img.alignright, .wp-caption.alignright {
 	display: inline-block;
 	width: 29rem;
 	height: 5.5rem;
-	margin: .5rem 0;
+	margin: 0;
 	background-image: url('../images/Logo-OK-circulo-619x110-02.png');
 	background-repeat: no-repeat;
 	background-position: center;
@@ -1869,7 +1880,7 @@ Media Queries
 	}
 	.site-title {
 		font-size: 3.8rem;
-		margin: .5rem 0;
+		margin: 0;
 	}
 	.site-header .wrap > a {
 		display:block;
