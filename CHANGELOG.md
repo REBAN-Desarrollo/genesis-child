@@ -2,6 +2,10 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.28
+
+- WordPress Popular Posts: se deja de forzar `wpp-js` al footer para respetar el orden original del plugin.
+
 ## 25.12.27
 
 - Home/archivo/blog/search migran a tarjetas BEM (`oc-card`) con contenedores, media y meta alineados; se eliminan separadores manuales de fecha/autor y se conservan clases legacy para compatibilidad.

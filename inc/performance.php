@@ -309,18 +309,4 @@ function reban_perf_fill_image_dimensions( $content ) {
     );
 }
 
-// Move WordPress Popular Posts script to footer to keep head light.
-add_action(
-    'wp_enqueue_scripts',
-    function () {
-        if ( is_admin() ) {
-            return;
-        }
-
-        if ( wp_script_is( 'wpp-js', 'registered' ) || wp_script_is( 'wpp-js', 'enqueued' ) ) {
-            wp_script_add_data( 'wpp-js', 'group', 1 ); // 1 = footer.
-        }
-    },
-    99
-);
 
