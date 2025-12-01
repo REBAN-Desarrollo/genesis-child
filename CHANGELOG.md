@@ -2,6 +2,15 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.05
+
+- `sb-functions.php` se renombra a `sidebar.php` y todas las funciones usan prefijo `sidebar_*` para que el naming refleje claramente el rol de sidebars/off-canvas.
+- Includes y documentación (README, changelog) apuntan al nuevo archivo.
+
+## 25.12.06
+
+- Se reactiva la slidebar izquierda con buscador y menú primario fijos (sin `dynamic_sidebar`) y vuelven los toggles en header/menú para abrirla.
+
 ## 25.12.04
 
 - Simplificamos la deteccion de bajada en headroom al quitar la comprobacion redundante de distancia.
@@ -15,7 +24,7 @@ Todas las notas de version del tema okchicas.com.
 
 ## 25.12.02
 
-- Se desactivo el render de las slidebars en `sb-functions.php`, dejando solo el contenedor `#sb-site` para evitar que se impriman menus/widgets en el sidebar.
+- Se desactivo el render de las slidebars en `sidebar.php`, dejando solo el contenedor `#sb-site` para evitar que se impriman menus/widgets en el sidebar y se removieron los toggles del menu primario/header.
 
 ## 25.12.01
 
@@ -97,5 +106,5 @@ Todas las notas de version del tema okchicas.com.
 - Optimizaciones de rendimiento: busting de cache para CSS/JS, `preload` del CSS principal y `async` para scripts seleccionados.
 - Ajustes de layout: ancho completo en listados y bucles de contenido personalizados para home/archivo/busqueda.
 - Hooks de cabecera y pie que insertan scripts propios, limpian dependencias innecesarias y personalizan el footer.
-- Registro de menus y sidebars adicionales (header, footer y secciones laterales) via `sb-functions.php`.
+- Registro de menus y sidebars adicionales (header, footer y secciones laterales) via `sidebar.php` (antes `sb-functions.php`).
 - Mejoras de contenido: fechas en espanol, etiquetas accesibles en formularios, incrustaciones ajustadas de YouTube/Instagram y botones de navegacion/autor personalizados.

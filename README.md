@@ -56,7 +56,7 @@ Genesis Framework (tema padre)
       |
 okchicas.com (tema hijo)
       |-- functions.php (hooks y optimizaciones)
-      |-- sb-functions.php (sidebars, menus y header/footer extra)
+      |-- sidebar.php (sidebars, menus y header/footer extra)
       |-- Plantillas: home.php, archive.php, single.php, search.php
       |-- Assets: css/, js/, fonts/, images/
 ```
@@ -67,7 +67,7 @@ okchicas.com (tema hijo)
 - `style_loader_tag` y `script_loader_tag` (`functions.php`): marca CSS como `preload` y anade `async` a scripts seleccionados para mejorar rendimiento.
 - `wp_head` y `wp_footer` (`functions.php`, `single.php`): inserta scripts propios y desregistra librerias de terceros cuando no se necesitan.
 - `genesis_*` (varios archivos): ajusta layout (`genesis_pre_get_option_site_layout`), reemplaza el loop (`genesis_loop`), personaliza header/footer (`genesis_header`, `genesis_footer`, `genesis_before`, `genesis_after`) y textos de navegacion/autor.
-- `init`, `widgets_init`, `template_redirect` (`functions.php`, `sb-functions.php`): registra menus y sidebars, modifica atributos async para scripts de plugins y elimina prefetched DNS.
+- `init`, `widgets_init`, `template_redirect` (`functions.php`, `sidebar.php`): registra menus y sidebars, modifica atributos async para scripts de plugins y elimina prefetched DNS.
 - `the_content`, `the_time`, `get_search_form`, `embed_handler_html`/`embed_oembed_html` (`functions.php`, `single.php`, `home.php`, `archive.php`, `search.php`): formatea fechas, corrige etiquetas de formularios y ajusta incrustaciones de YouTube e Instagram.
 
 ## Desarrollo
