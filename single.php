@@ -72,24 +72,23 @@ add_action('wp_head', 'reban_single_preload_image', 1); // Prioridad 1 para que 
 function reban_single_preload_image() {
     if (is_singular() && has_post_thumbnail()) {
         $thumbnail_id = get_post_thumbnail_id();
-        $file_path = get_attached_file($thumbnail_id);
-        $path_parts = pathinfo($file_path);
-        $webp_file = $path_parts['dirname'] . '/' . $path_parts['filename'] . '.webp';
-        
-        if (file_exists($webp_file)) {
-            // Precargar WebP si existe
-            $uploads_dir = wp_upload_dir();
-            $webp_url = str_replace($uploads_dir['basedir'], $uploads_dir['baseurl'], $webp_file);
-            
-            echo '<link rel="preload" as="image" href="' . esc_url($webp_url) . '" type="image/webp" fetchpriority="high" importance="high">';
-        } else {
-            // Fallback a precargar imagen original
-            $image_arr = wp_get_attachment_image_src($thumbnail_id, 'large');
-            $img_url = $image_arr[0] ?? '';
-            $srcset = wp_get_attachment_image_srcset($thumbnail_id);
-            
-            if ($img_url && $srcset) {
-                echo '<link rel="preload" as="image" href="' . esc_url($img_url) . '" imagesrcset="' . esc_attr($srcset) . '" fetchpriority="high" importance="high">';
+        $file_path    = get_attached_file($thumbnail_id);
+        $path_parts   = pathinfo($file_path);
+        $webp_file    = $path_parts['dirname'] . '/' . $path_parts['filename'] . '.webp';
+        $srcset       = wp_get_attachment_image_srcset($thumbnail_id, 'large');
+        $sizes        = wp_get_attachment_image_sizes($thumbnail_id, 'large');
+        $img_url_arr  = wp_get_attachment_image_src($thumbnail_id, 'large');
+        $img_url      = $img_url_arr[0] ?? '';
+        $sizes_attr   = $sizes ?: '(max-width: 800px) 100vw, 730px';
+
+        if ($srcset && $img_url) {
+            if (file_exists($webp_file)) {
+                $uploads_dir  = wp_upload_dir();
+                $webp_url     = str_replace($uploads_dir['basedir'], $uploads_dir['baseurl'], $webp_file);
+                $webp_srcset  = preg_replace('/\.(jpe?g|png)(\s+\d+w)/i', '.webp$2', $srcset);
+                echo '<link rel="preload" as="image" href="' . esc_url($webp_url) . '" imagesrcset="' . esc_attr($webp_srcset) . '" imagesizes="' . esc_attr($sizes_attr) . '" type="image/webp" fetchpriority="high">';
+            } else {
+                echo '<link rel="preload" as="image" href="' . esc_url($img_url) . '" imagesrcset="' . esc_attr($srcset) . '" imagesizes="' . esc_attr($sizes_attr) . '" fetchpriority="high">';
             }
         }
     }
@@ -184,47 +183,46 @@ function reban_single_featured_image($thumbnail_id) {
     ?>
     <div class="full-img">
         <?php
-        $file_path  = get_attached_file($thumbnail_id);
-        $path_parts = pathinfo($file_path);
-        $webp_file  = $path_parts['dirname'] . '/' . $path_parts['filename'] . '.webp';
+        $file_path   = get_attached_file($thumbnail_id);
+        $path_parts  = pathinfo($file_path);
+        $webp_file   = $path_parts['dirname'] . '/' . $path_parts['filename'] . '.webp';
+        $srcset      = wp_get_attachment_image_srcset($thumbnail_id, 'large');
+        $sizes_attr  = wp_get_attachment_image_sizes($thumbnail_id, 'large');
+        $sizes_value = $sizes_attr ?: '(max-width: 800px) 100vw, 730px';
 
-        $srcset = [
-            wp_get_attachment_image_url($thumbnail_id, 'medium') . ' 400w',
-            wp_get_attachment_image_url($thumbnail_id, 'portfolio') . ' 520w',
-            wp_get_attachment_image_url($thumbnail_id, 'large') . ' 730w',
-        ];
-
-        if (file_exists($webp_file)) {
-            // Crear URL para WebP
+        if (file_exists($webp_file) && $srcset) {
             $uploads_dir = wp_upload_dir();
-            $webp_url    = str_replace($uploads_dir['basedir'], $uploads_dir['baseurl'], $webp_file);
-
-            // Crear srcset para WebP
-            $webp_srcset = [];
-            foreach ($srcset as $src) {
-                $parts        = explode(' ', $src);
-                $webp_srcset[] = str_replace(['.jpg', '.jpeg', '.png'], '.webp', $parts[0]) . ' ' . $parts[1];
-            }
+            $webp_srcset = preg_replace('/\.(jpe?g|png)(\s+\d+w)/i', '.webp$2', $srcset);
 
             echo '<picture>';
-            echo '<source srcset="' . esc_attr(implode(', ', $webp_srcset)) . '" type="image/webp">';
-            echo '<source srcset="' . esc_attr(implode(', ', $srcset)) . '">';
-            the_post_thumbnail('large', [
-                'class'         => 'aligncenter',
-                'fetchpriority' => 'high',
-                'loading'       => 'eager',
-                'decoding'      => 'async',
-            ]);
+            echo '<source srcset="' . esc_attr($webp_srcset) . '" sizes="' . esc_attr($sizes_value) . '" type="image/webp">';
+            echo '<source srcset="' . esc_attr($srcset) . '" sizes="' . esc_attr($sizes_value) . '">';
+            echo wp_get_attachment_image(
+                $thumbnail_id,
+                'large',
+                false,
+                array(
+                    'class'         => 'aligncenter',
+                    'fetchpriority' => 'high',
+                    'loading'       => 'eager',
+                    'decoding'      => 'async',
+                    'sizes'         => $sizes_value,
+                )
+            );
             echo '</picture>';
         } else {
-            // No hay WebP, usar la imagen original
-            the_post_thumbnail('large', [
-                'class'         => 'aligncenter',
-                'srcset'        => implode(', ', $srcset),
-                'fetchpriority' => 'high',
-                'loading'       => 'eager',
-                'decoding'      => 'async',
-            ]);
+            echo wp_get_attachment_image(
+                $thumbnail_id,
+                'large',
+                false,
+                array(
+                    'class'         => 'aligncenter',
+                    'fetchpriority' => 'high',
+                    'loading'       => 'eager',
+                    'decoding'      => 'async',
+                    'sizes'         => $sizes_value,
+                )
+            );
         }
         ?>
     </div>

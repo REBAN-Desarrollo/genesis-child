@@ -6,6 +6,7 @@ Todas las notas de version del tema okchicas.com.
 
 - Home/blog vuelven a un feed de una sola columna (en vez del grid auto-fill) para que cada fila alterne portada y texto como antes.
 - La slidebar izquierda se imprime dentro de un `<template>` y se inserta al primer click del toggle, reduciendo nodos y trabajo de layout en la carga inicial.
+- La imagen destacada precarga el mismo `srcset/sizes` que usa el `<picture>` para evitar descargas duplicadas (preload + render) y mantener LCP bajo.
 
 ## 25.12.11
 
