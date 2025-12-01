@@ -2,6 +2,14 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.12
+
+- Home/blog vuelven a un feed de una sola columna (en vez del grid auto-fill) para que cada fila alterne portada y texto como antes.
+
+## 25.12.11
+
+- Headroom cachea la posicion de scroll y difiere los toggles via requestAnimationFrame para evitar forced reflow al iniciar o al redimensionar.
+
 ## 25.12.10
 
 - `js/all.js` inicializa slidebar, headroom y el colapso del billboard tan pronto carga (aunque el script llegue async) revisando `document.readyState`, para que no quede una franja negra en header cuando el slot de anuncio viene vacio.

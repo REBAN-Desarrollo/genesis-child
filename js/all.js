@@ -182,7 +182,8 @@
     }
 
     let enabled = false;
-    let lastY = window.scrollY;
+    let lastY = 0;
+    let pendingY = 0;
     let ticking = false;
     let resizeTimer;
 
@@ -190,12 +191,11 @@
       header.classList.remove('headroom', 'bajando', 'subiendo', 'noesarriba', 'topando');
     };
 
-    const update = () => {
+    const update = (currentY) => {
       if (!enabled) {
         return;
       }
 
-      const currentY = window.scrollY;
       const delta = currentY - lastY;
       const distance = Math.abs(delta);
 
@@ -220,16 +220,30 @@
       lastY = currentY;
     };
 
-    const onScroll = () => {
+    const scheduleUpdate = () => {
       if (ticking || !enabled) {
         return;
       }
 
       ticking = true;
       window.requestAnimationFrame(() => {
-        update();
+        if (!enabled) {
+          ticking = false;
+          return;
+        }
+
+        update(pendingY);
         ticking = false;
       });
+    };
+
+    const onScroll = () => {
+      if (!enabled) {
+        return;
+      }
+
+      pendingY = window.scrollY;
+      scheduleUpdate();
     };
 
     const enable = () => {
@@ -237,10 +251,11 @@
         return;
       }
 
+      pendingY = window.scrollY;
+      lastY = pendingY;
       enabled = true;
       header.classList.add('headroom');
-      lastY = window.scrollY;
-      update();
+      scheduleUpdate();
       window.addEventListener('scroll', onScroll, { passive: true });
     };
 
@@ -250,6 +265,7 @@
       }
 
       enabled = false;
+      ticking = false;
       window.removeEventListener('scroll', onScroll);
       reset();
     };
