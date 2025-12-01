@@ -22,7 +22,7 @@ function reban_single_init() {
 }
 
 /**
- * Critical CSS for single posts served from an external file.
+ * Critical CSS for single posts inlined into the head.
  */
 function reban_single_critical_css() {
     $critical_relative = '/critical-single.css';
@@ -32,13 +32,20 @@ function reban_single_critical_css() {
         return;
     }
 
-    $critical_src = function_exists( 'reban_perf_versioned_asset' )
-        ? reban_perf_versioned_asset( $critical_relative )
-        : add_query_arg( 'v', filemtime( $critical_path ), get_stylesheet_directory_uri() . $critical_relative );
-    $critical_src = esc_url( $critical_src );
+    $critical_css = file_get_contents( $critical_path );
 
-    echo '<link rel="preload" href="' . $critical_src . '" as="style">';
-    echo '<link rel="stylesheet" id="reban-critical-single" href="' . $critical_src . '">';
+    if ( false === $critical_css ) {
+        return;
+    }
+
+    $last_modified = filemtime( $critical_path );
+    $version_attr  = $last_modified ? ' data-version="' . esc_attr( $last_modified ) . '"' : '';
+
+    printf(
+        '<style id="reban-critical-single" data-type="inline-critical"%1$s>%2$s</style>',
+        $version_attr,
+        $critical_css
+    );
 }
 
 /**

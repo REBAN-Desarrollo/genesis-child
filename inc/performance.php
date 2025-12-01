@@ -41,7 +41,7 @@ function reban_perf_versioned_asset( $relative_path, $fallback_uri = '' ) {
  * 1 - preconnect / dns preload / preload archivos que se usaran
  *      1.a - Preload: https://web.dev/preload-critical-assets/
  *      1.b - Preconnect / dns-preload:https://web.dev/preconnect-and-dns-prefetch/
- * 2 - Critical CSS externo con versionado:
+ * 2 - Critical CSS inline (home/page) cargado desde archivos versionados.
  */
 add_action( 'wp_head', 'reban_perf_preloads', 2 );
 function reban_perf_preloads() {
@@ -81,9 +81,9 @@ function reban_perf_preloads() {
         <?php if ( $logo_src ) : ?>
             <link rel="preload" href="<?php echo esc_url( $logo_src ); ?>" as="image"<?php echo $logo_width && $logo_height ? ' width="' . esc_attr( $logo_width ) . '" height="' . esc_attr( $logo_height ) . '"' : ''; ?>>
         <?php endif; ?>
-        <link rel="preload" href="<?php echo $preloads['reban_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
-        <link rel="preload" href="<?php echo $preloads['poppins_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
-        <link rel="preload" href="<?php echo $preloads['proxima_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
+        <link rel="preload" href="<?php echo esc_url( $preloads['reban_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
+        <link rel="preload" href="<?php echo esc_url( $preloads['poppins_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
+        <link rel="preload" href="<?php echo esc_url( $preloads['proxima_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
         
         <style id="sidebar-toggle-cls-fix">
             @media (max-width: 944px) {
@@ -134,13 +134,26 @@ function reban_perf_preloads() {
     $critical_relative = is_page() ? '/critical-page.css' : '/critical-home.css';
     $critical_path     = $theme_dir . $critical_relative;
 
-    if ( file_exists( $critical_path ) ) {
-        $critical_href = reban_perf_versioned_asset( $critical_relative );
-        ?>
-            <link rel="preload" href="<?php echo $critical_href; ?>" as="style">
-            <link rel="stylesheet" id="reban-critical-css" href="<?php echo $critical_href; ?>">
-        <?php
+    if ( ! file_exists( $critical_path ) ) {
+        return;
     }
+
+    $critical_css = file_get_contents( $critical_path );
+
+    if ( false === $critical_css ) {
+        return;
+    }
+
+    $style_id      = is_page() ? 'reban-critical-page' : 'reban-critical-home';
+    $last_modified = filemtime( $critical_path );
+    $version_attr  = $last_modified ? ' data-version="' . esc_attr( $last_modified ) . '"' : '';
+
+    printf(
+        '<style id="%1$s" data-type="inline-critical"%2$s>%3$s</style>',
+        esc_attr( $style_id ),
+        $version_attr,
+        $critical_css
+    );
 }
 
 // Transform styles.css markup to load CSS asynchronously and add style.css on head position #2.
@@ -158,7 +171,7 @@ function reban_perf_async_css( $html, $handle ) {
 }
 
 /** Add async attributes to enqueued scripts where needed.The ability to filter script tags was added in WordPress 4.1 for this purpose. */
-add_filter( 'script_loader_tag', 'reban_perf_async_js', 10, 3 );
+add_filter( 'script_loader_tag', 'reban_perf_async_js', 99, 3 );
 function reban_perf_async_js( $tag, $handle, $src ) {
     // the handles of the enqueued scripts we want to async.
     $async_scripts = array( CHILD_THEME_NAME );
@@ -179,20 +192,6 @@ function reban_perf_async_js( $tag, $handle, $src ) {
     }
     return $tag;
 }
-
-/**
- * Hint WordPress to defer WPP when the strategy API is available.
- */
-add_action(
-    'wp_enqueue_scripts',
-    function () {
-        if ( ! is_admin() && wp_script_is( 'wpp-js', 'registered' ) ) {
-            // `strategy` is available in newer WP versions; fallback handled by script_loader_tag above.
-            wp_script_add_data( 'wpp-js', 'strategy', 'defer' );
-        }
-    },
-    15
-);
 
 add_action( 'wp_enqueue_scripts', 'reban_perf_gate_wpp_assets', 20 );
 /**
