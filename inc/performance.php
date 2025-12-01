@@ -37,6 +37,39 @@ function reban_perf_versioned_asset( $relative_path, $fallback_uri = '' ) {
     return esc_url( $uri );
 }
 
+/**
+ * Convert relative font URLs in inline CSS to absolute, versioned assets.
+ *
+ * When CSS is inlined into the document, relative URLs resolve against the page
+ * path (e.g. /belleza/prueba-html/fonts/*) and trigger 404s. This normalizes
+ * the font references so they always point to the theme directory.
+ *
+ * @param string $css Inline CSS contents.
+ *
+ * @return string CSS with fixed font URLs.
+ */
+function reban_perf_inline_font_urls( $css ) {
+    if ( ! $css ) {
+        return $css;
+    }
+
+    $font_map = array(
+        'rebanfont.woff2'           => reban_perf_versioned_asset( '/fonts/rebanfont.woff2' ),
+        'rebanfont.woff'            => reban_perf_versioned_asset( '/fonts/rebanfont.woff' ),
+        'Poppins-SemiBold.woff2'    => reban_perf_versioned_asset( '/fonts/Poppins-SemiBold.woff2' ),
+        'Poppins-SemiBold.woff'     => reban_perf_versioned_asset( '/fonts/Poppins-SemiBold.woff' ),
+        'ProximaNova-Regular.woff2' => reban_perf_versioned_asset( '/fonts/ProximaNova-Regular.woff2' ),
+        'ProximaNova-Regular.woff'  => reban_perf_versioned_asset( '/fonts/ProximaNova-Regular.woff' ),
+    );
+
+    foreach ( $font_map as $filename => $url ) {
+        $pattern = '~url\\((["\']?)fonts/' . preg_quote( $filename, '~' ) . '\\1\\)~i';
+        $css     = preg_replace( $pattern, "url('{$url}')", $css );
+    }
+
+    return $css;
+}
+
 /* Headers mods
  * 1 - preconnect / dns preload / preload archivos que se usaran
  *      1.a - Preload: https://web.dev/preload-critical-assets/
@@ -144,6 +177,8 @@ function reban_perf_preloads() {
         return;
     }
 
+    $critical_css = reban_perf_inline_font_urls( $critical_css );
+
     $style_id      = is_page() ? 'reban-critical-page' : 'reban-critical-home';
     $last_modified = filemtime( $critical_path );
     $version_attr  = $last_modified ? ' data-version="' . esc_attr( $last_modified ) . '"' : '';
@@ -191,27 +226,6 @@ function reban_perf_async_js( $tag, $handle, $src ) {
         return '<script type="text/javascript" async src="' . esc_url( $src ) . '"></script>' . "\n";
     }
     return $tag;
-}
-
-add_action( 'wp_enqueue_scripts', 'reban_perf_gate_wpp_assets', 20 );
-/**
- * Limit WPP assets to single posts where the widget actually renders.
- */
-function reban_perf_gate_wpp_assets() {
-    if ( is_admin() ) {
-        return;
-    }
-
-    $wpp_handle     = 'wpp-js';
-    $widget_is_used = is_active_widget( false, false, 'wppwidget', true );
-
-    if ( is_singular( 'post' ) && $widget_is_used ) {
-        return;
-    }
-
-    if ( wp_script_is( $wpp_handle, 'enqueued' ) ) {
-        wp_dequeue_script( $wpp_handle );
-    }
 }
 
 // Add missing width/height to inline images so the browser can reserve space and avoid CLS.

@@ -3,8 +3,12 @@
  * Theme-specific visual and content customizations.
  */
 
+// -----------------------------------------------------------------------------
+// Logo and date helpers.
+// -----------------------------------------------------------------------------
+
 /**
- * Devuelve la fecha formateada con nombres de meses en español.
+ * Devuelve la fecha formateada con nombres de meses en espanol.
  *
  * @return string
  */
@@ -71,6 +75,10 @@ function reban_site_title_with_logo( $title, $inside, $wrap ) {
     );
 }
 
+// -----------------------------------------------------------------------------
+// Loop output (home, archive, search).
+// -----------------------------------------------------------------------------
+
 /**
  * Shared post loop used by home, archive and search templates.
  *
@@ -92,63 +100,103 @@ function reban_loop_archive( $args = array() ) {
     $args = wp_parse_args( $args, $defaults );
 
     if ( have_posts() ) {
-        $count = 0;
+        $index = 0;
+
         while ( have_posts() ) {
-            the_post(); ?>
-            <div <?php post_class( array( 'oc-card' ) ); ?> id="post-<?php the_ID(); ?>">
-                <div class="full-post-container oc-card__inner <?php echo esc_attr( (++$count % 2 ? 'oc-card__inner--reversed odd' : 'even') ); ?> clearfix">
-                    <div class="post-left-col oc-card__media">
-                        <a href="<?php echo esc_url( get_permalink() ); ?>">
-                            <?php
-                            $thumbnail_id  = get_post_thumbnail_id();
-                            $thumbnail_alt = $thumbnail_id ? get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true ) : '';
-
-                            if ( '' === $thumbnail_alt ) {
-                                $thumbnail_alt = get_the_title();
-                            }
-
-                            if ( $thumbnail_id ) {
-                                echo wp_get_attachment_image(
-                                    $thumbnail_id,
-                                    'portfolio',
-                                    false,
-                                    array(
-                                        'alt'     => $thumbnail_alt,
-                                        'loading' => 'lazy',
-                                        'sizes'   => '(max-width: 600px) 100vw, (max-width: 1024px) 70vw, 520px',
-                                    )
-                                );
-                            }
-                            ?>
-                        </a>
-                    </div>
-                    <div class="post-right-col oc-card__body">
-                        <h2 class="oc-card__title">
-                            <a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
-                                <?php echo esc_html( get_the_title() ); ?>
-                            </a>
-                        </h2>
-                        <div class="oc-card__meta<?php echo $args['wrap_author_box'] ? ' ' . esc_attr( $args['wrap_author_box'] ) : ''; ?>">
-                            <span class="author oc-card__author">Por <?php the_author_posts_link(); ?></span>
-                            <span class="time oc-card__time">
-                                <time itemprop="datePublished" content="<?php echo esc_attr( get_the_date('Y-m-d') ); ?>">
-                                    <?php echo esc_html( get_the_date( $args['date_format'] ) ); ?>
-                                </time>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        <?php }
+            the_post();
+            reban_render_archive_card( ++$index, $args );
+        }
     } elseif ( $args['empty_message'] ) {
-        echo '<p>' . esc_html( $args['empty_message'] ) . '</p>';
+        reban_render_archive_empty_state( $args['empty_message'] );
     }
 
     genesis_posts_nav();
 }
 
 /**
+ * Renderiza una tarjeta de loop (archivo/home/search).
+ *
+ * @param int   $index Indice 1-based dentro del loop.
+ * @param array $args  Configuracion de formato y clases.
+ */
+function reban_render_archive_card( $index, $args ) {
+    $thumbnail_id  = get_post_thumbnail_id();
+    $thumbnail_alt = $thumbnail_id ? get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true ) : '';
+
+    if ( '' === $thumbnail_alt ) {
+        $thumbnail_alt = get_the_title();
+    }
+
+    $layout_classes = array(
+        'full-post-container',
+        'oc-card__inner',
+        $index % 2 ? 'oc-card__inner--reversed odd' : 'even',
+        'clearfix',
+    );
+
+    $meta_classes = 'oc-card__meta';
+    if ( ! empty( $args['wrap_author_box'] ) ) {
+        $meta_classes .= ' ' . $args['wrap_author_box'];
+    }
+    ?>
+    <div <?php post_class( array( 'oc-card' ) ); ?> id="post-<?php the_ID(); ?>">
+        <div class="<?php echo esc_attr( implode( ' ', $layout_classes ) ); ?>">
+            <div class="post-left-col oc-card__media">
+                <a href="<?php echo esc_url( get_permalink() ); ?>">
+                    <?php
+                    if ( $thumbnail_id ) {
+                        echo wp_get_attachment_image(
+                            $thumbnail_id,
+                            'portfolio',
+                            false,
+                            array(
+                                'alt'     => $thumbnail_alt,
+                                'loading' => 'lazy',
+                                'sizes'   => '(max-width: 600px) 100vw, (max-width: 1024px) 70vw, 520px',
+                            )
+                        );
+                    }
+                    ?>
+                </a>
+            </div>
+            <div class="post-right-col oc-card__body">
+                <h2 class="oc-card__title">
+                    <a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
+                        <?php echo esc_html( get_the_title() ); ?>
+                    </a>
+                </h2>
+                <div class="<?php echo esc_attr( $meta_classes ); ?>">
+                    <span class="author oc-card__author">Por <?php the_author_posts_link(); ?></span>
+                    <span class="time oc-card__time">
+                        <time itemprop="datePublished" content="<?php echo esc_attr( get_the_date( 'Y-m-d' ) ); ?>">
+                            <?php echo esc_html( get_the_date( $args['date_format'] ) ); ?>
+                        </time>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+
+/**
+ * Mensaje cuando no hay posts en el loop.
+ *
+ * @param string $message Texto a mostrar.
+ */
+function reban_render_archive_empty_state( $message ) {
+    echo '<p>' . esc_html( $message ) . '</p>';
+}
+
+// -----------------------------------------------------------------------------
+// Layout tweaks.
+// -----------------------------------------------------------------------------
+
+/**
  * Add clearfix utility class to common Genesis containers.
+ *
+ * @param array $attr Existing attributes.
+ * @return array
  */
 function reban_custom_clearfix( $attr ) {
     if ( isset( $attr['class'] ) ) {
@@ -176,6 +224,10 @@ foreach ( array(
     add_filter( "genesis_attr_{$context}", 'reban_custom_clearfix' );
 }
 
+// -----------------------------------------------------------------------------
+// Post meta and search.
+// -----------------------------------------------------------------------------
+
 /**
  * Customize the entry meta in the entry header (requires HTML5 theme support).
  *
@@ -190,12 +242,15 @@ function reban_post_info_filter( $post_info ) {
     return $post_info;
 }
 
-//* Customize search form input box text
 add_filter( 'genesis_search_text', 'reban_custom_search_text' );
 function reban_custom_search_text( $text ) {
     return esc_attr( 'Buscar en el sitio' );
 }
 // Buscador del header desactivado; el buscador vive en la slidebar izquierda.
+
+// -----------------------------------------------------------------------------
+// Embeds.
+// -----------------------------------------------------------------------------
 
 /* Custom embeds
     1 - Youtube Videos remove show info related etc
@@ -351,8 +406,10 @@ function custom_instagram_settings( $code ) {
 add_filter( 'embed_handler_html', 'custom_instagram_settings' );
 add_filter( 'embed_oembed_html', 'custom_instagram_settings' );
 
+// -----------------------------------------------------------------------------
+// Footer.
+// -----------------------------------------------------------------------------
 
-/* Footer Mods */
 add_action( 'genesis_footer', 'reban_custom_footer', 5 );
 function reban_custom_footer() {
     ?>
@@ -368,63 +425,75 @@ function reban_custom_footer() {
     </ul>
     <?php
 }
-//* Footer menu
-add_action( 'init', 'register_my_menus' );
-function register_my_menus() {
+
+add_action( 'init', 'reban_register_menus' );
+function reban_register_menus() {
     register_nav_menus(
         array(
             'footer-menu' => __( 'Footer Menu' ),
         )
     );
 }
+
 remove_action( 'genesis_footer', 'genesis_do_footer' );
 add_action( 'genesis_footer', 'genesis_user_footer' );
 function genesis_user_footer() {
     ?>
-        <div id="footer-menu">
-                <?php
-                    wp_nav_menu(array(
-                        'theme_location' => 'footer-menu',
-                        'menu_class' => '',
-                        'fallback_cb' => false,
-                    ));
-                ?>
-        </div>
-        <div id="copyright"><p>&copy;<?php echo esc_html( date_i18n('Y') ); ?> Grupo Reban. Todos los derechos reservados</p></div>
-        <div id="footer-menu">
-                <?php
-                    wp_nav_menu(array(
-                        'theme_location' => 'secondary',
-                        'menu_class' => '',
-                        'fallback_cb' => false,
-                    ));
-                ?>
-        </div>
+    <div id="footer-menu">
+        <?php
+        wp_nav_menu(
+            array(
+                'theme_location' => 'footer-menu',
+                'menu_class'     => '',
+                'fallback_cb'    => false,
+            )
+        );
+        ?>
+    </div>
+    <div id="copyright"><p>&copy;<?php echo esc_html( date_i18n( 'Y' ) ); ?> Grupo Reban. Todos los derechos reservados</p></div>
+    <div id="footer-menu">
+        <?php
+        wp_nav_menu(
+            array(
+                'theme_location' => 'secondary',
+                'menu_class'     => '',
+                'fallback_cb'    => false,
+            )
+        );
+        ?>
+    </div>
     <?php
 }
 
+// -----------------------------------------------------------------------------
+// Pagination labels.
+// -----------------------------------------------------------------------------
 
 add_filter( 'genesis_prev_link_text', 'reban_custom_pagination_prev' );
-function reban_custom_pagination_prev($text) {
-        $text = 'Más reciente';
-        return $text;
+function reban_custom_pagination_prev( $text ) {
+    $text = 'Mas reciente';
+    return $text;
 }
 add_filter( 'genesis_next_link_text', 'reban_custom_pagination_next' );
-function reban_custom_pagination_next($text) {
-        $text = 'Más Antiguo';
-        return $text;
+function reban_custom_pagination_next( $text ) {
+    $text = 'Mas Antiguo';
+    return $text;
 }
+
+// -----------------------------------------------------------------------------
+// Author box.
+// -----------------------------------------------------------------------------
 
 /* Change Author & Comment Box Gravatar/Avatar Image Size */
 add_filter( 'genesis_author_box_gravatar_size', 'reban_custom_gravatar_size' );
-function reban_custom_gravatar_size($size) {
+function reban_custom_gravatar_size( $size ) {
     return '120';
 }
 
 //* Customize the author box title
 add_filter( 'genesis_author_box_title', 'reban_custom_author_title' );
 function reban_custom_author_title() {
-        return esc_html( get_the_author() );
+    return esc_html( get_the_author() );
 }
 
 add_filter( 'genesis_author_box', 'be_author_box', 10, 6 );
@@ -442,20 +511,24 @@ add_filter( 'genesis_author_box', 'be_author_box', 10, 6 );
  * @return string $output
  */
 function be_author_box( $output, $context, $pattern, $gravatar, $title, $description ) {
-                $output = '';
-                $output .= '<div class="author-box clearfix">';
-                $output .= '<div class="alignleft">';
-                $output .= get_avatar( get_the_author_meta( 'email' ), 120 );
-                $output .= '</div><!-- .left -->';
-                $output .= '<div class="alignright">';
-                $name = esc_html( get_the_author() );
-                $title = get_the_author_meta( 'title' );
-                        if ( ! empty( $title ) )
-                                $name .= ', ' . esc_html( $title );
-                $output .= '<h2 class="title">'. $name;
-                $output .= '</h2>';
-                $output .= '<p class="desc">' . wp_kses_post( get_the_author_meta( 'description' ) ) . '</p>';
-                $output .= '</div>';
-                $output .= '</div><!-- .author-box -->';
-        return $output;
+    $output  = '';
+    $output .= '<div class="author-box clearfix">';
+    $output .= '<div class="alignleft">';
+    $output .= get_avatar( get_the_author_meta( 'email' ), 120 );
+    $output .= '</div><!-- .left -->';
+    $output .= '<div class="alignright">';
+
+    $name  = esc_html( get_the_author() );
+    $title = get_the_author_meta( 'title' );
+
+    if ( ! empty( $title ) ) {
+        $name .= ', ' . esc_html( $title );
+    }
+
+    $output .= '<h2 class="title">' . $name . '</h2>';
+    $output .= '<p class="desc">' . wp_kses_post( get_the_author_meta( 'description' ) ) . '</p>';
+    $output .= '</div>';
+    $output .= '</div><!-- .author-box -->';
+
+    return $output;
 }

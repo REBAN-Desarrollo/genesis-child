@@ -12,8 +12,9 @@ function reban_assets_css() {
     $stylesheet_uri = get_stylesheet_directory_uri() . '/css/style.css';
     $stylesheet_dir = get_stylesheet_directory() . '/css/style.css';
     $last_modified  = filemtime( $stylesheet_dir ); // segundos exactos para bustear cache al guardar
+    $version        = gmdate( 'ymd_His', $last_modified );
 
-    wp_enqueue_style( CHILD_THEME_NAME, $stylesheet_uri, array(), $last_modified );
+    wp_enqueue_style( CHILD_THEME_NAME, $stylesheet_uri, array(), $version );
 }
 
 // 4 - Enqueue /js/all.js script.
@@ -22,6 +23,7 @@ function reban_assets_js() {
     $javascript_uri = get_stylesheet_directory_uri() . '/js/all.js';
     $javascript_dir = get_stylesheet_directory() . '/js/all.js';
     $last_modified  = filemtime( $javascript_dir ); // mantener sync con estilo en segundos
+    $version        = gmdate( 'ymd_His', $last_modified );
 
-    wp_enqueue_script( CHILD_THEME_NAME, $javascript_uri, array(), $last_modified, true );
+    wp_enqueue_script( CHILD_THEME_NAME, $javascript_uri, array(), $version, true );
 }

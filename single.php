@@ -38,6 +38,8 @@ function reban_single_critical_css() {
         return;
     }
 
+    $critical_css = reban_perf_inline_font_urls( $critical_css );
+
     $last_modified = filemtime( $critical_path );
     $version_attr  = $last_modified ? ' data-version="' . esc_attr( $last_modified ) . '"' : '';
 
