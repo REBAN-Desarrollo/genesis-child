@@ -2,6 +2,11 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.15
+
+- Slidebar: al bloquear el scroll se calcula el ancho de la barra y se aplica padding compensado para que el body no se mueva al abrir/cerrar el menú.
+- Header móvil: el ícono de menú se fija al lado izquierdo con el espaciado de la escala de diseño para que no quede centrado.
+
 ## 25.12.14
 
 - Header: el contenedor del logo ahora usa flex/gap para centrar el PNG de 110px sin recortes raros y baja el padding a .5rem en movil.

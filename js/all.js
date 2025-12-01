@@ -7,6 +7,7 @@
   const LOCK_CLASS = 'sb-locked';
   const SLIDEBAR_TEMPLATE_ID = 'sb-slidebar-template';
   const DEFAULT_SIDEBAR_ID = 'sb-sidebar-left';
+  const SCROLLBAR_VAR = '--scrollbar-compensation';
   const HEADROOM_BREAKPOINT = 927;
   const HEADROOM_OFFSET = 40;
   const HEADROOM_TOLERANCE_UP = 20;
@@ -72,6 +73,11 @@
   }
 
   function lockScroll() {
+    const scrollbarWidth = Math.max(window.innerWidth - document.documentElement.clientWidth, 0);
+    const compensation = `${scrollbarWidth}px`;
+
+    document.documentElement.style.setProperty(SCROLLBAR_VAR, compensation);
+    document.body.style.setProperty(SCROLLBAR_VAR, compensation);
     document.documentElement.classList.add(LOCK_CLASS);
     document.body.classList.add(LOCK_CLASS);
   }
@@ -79,6 +85,8 @@
   function unlockScroll() {
     document.documentElement.classList.remove(LOCK_CLASS);
     document.body.classList.remove(LOCK_CLASS);
+    document.documentElement.style.removeProperty(SCROLLBAR_VAR);
+    document.body.style.removeProperty(SCROLLBAR_VAR);
   }
 
   function openSidebar(id, { focusSearch } = {}) {

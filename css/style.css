@@ -127,6 +127,7 @@
   --slidebar-surface: #1f2025;
   --slidebar-border: rgba(214, 0, 107, 0.35);
   --slidebar-text: #f2f2f2;
+  --scrollbar-compensation: 0px;
 }
 
 /* icomoon.io fonts */
@@ -1906,7 +1907,7 @@ Media Queries
 		top: 0;
 	}
 	.site-header .wrap > a.sb-toggle-left {
-		/* left:15px; */
+		left: var(--spacing-sm);
 		/* font-size: 2.3rem; */
 	}
 	.site-header .wrap > a.sb-toggle-right {
@@ -2110,6 +2111,10 @@ Media Queries
 html.sb-locked,
 body.sb-locked {
 	overflow: hidden;
+}
+
+body.sb-locked {
+	padding-right: var(--scrollbar-compensation, 0px);
 }
 
 #sb-site {
