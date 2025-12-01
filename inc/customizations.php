@@ -38,12 +38,14 @@ function reban_site_title_with_logo( $title, $inside, $wrap ) {
         $width    = $header ? (int) $header->width : 0;
         $height   = $header ? (int) $header->height : 0;
     } else {
-        $fallback_path = get_stylesheet_directory() . '/images/Logo-OK-circulo-619x110-02.png';
-        $logo_src      = get_stylesheet_directory_uri() . '/images/Logo-OK-circulo-619x110-02.png';
+        $fallback_path = get_stylesheet_directory() . '/images/Logo-OK-footer-blanco.png';
+        $logo_src      = get_stylesheet_directory_uri() . '/images/Logo-OK-footer-blanco.png';
         if ( file_exists( $fallback_path ) ) {
             $logo_src = add_query_arg( 'v', filemtime( $fallback_path ), $logo_src );
+        } else {
+            $logo_src = '/wp-content/themes/genesis-child/images/Logo-OK-footer-blanco.png';
         }
-        $width  = 619;
+        $width  = 287;
         $height = 110;
     }
 

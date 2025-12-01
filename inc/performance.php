@@ -48,8 +48,8 @@ function reban_perf_preloads() {
         );
     } else {
         $logo_data = array(
-            $versioned_asset( '/images/Logo-OK-circulo-619x110-02.png', '/wp-content/uploads/2023/01/Logo-OK-circulo-619x110-02.png' ),
-            619,
+            $versioned_asset( '/images/Logo-OK-footer-blanco.png', '/wp-content/themes/genesis-child/images/Logo-OK-footer-blanco.png' ),
+            287,
             110,
         );
     }

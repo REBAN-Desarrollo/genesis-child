@@ -359,10 +359,16 @@
     window.setTimeout(collapseBillboard, 2500);
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
+  const init = () => {
     initSlidebar();
     initHeadroom();
     wrapFluidVideos();
     initBillboardCollapse();
-  });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

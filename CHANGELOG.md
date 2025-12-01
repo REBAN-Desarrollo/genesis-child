@@ -2,6 +2,10 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.10
+
+- `js/all.js` inicializa slidebar, headroom y el colapso del billboard tan pronto carga (aunque el script llegue async) revisando `document.readyState`, para que no quede una franja negra en header cuando el slot de anuncio viene vacio.
+
 ## 25.12.05
 
 - `sb-functions.php` se renombra a `sidebar.php` y todas las funciones usan prefijo `sidebar_*` para que el naming refleje claramente el rol de sidebars/off-canvas.
@@ -19,6 +23,10 @@ Todas las notas de version del tema okchicas.com.
 ## 25.12.08
 
 - Se separa el off-canvas a `sb-offcanvas.php` y se restaura `sidebar.php` como plantilla de sidebar primario (Genesis) para que reaparezca la barra lateral derecha en single.
+
+## 25.12.09
+
+- El fallback de logo usa `images/Logo-OK-footer-blanco.png` con versionado por `filemtime` (y fallback absoluto `/wp-content/themes/genesis-child/...`) para que siempre cargue en el header.
 
 ## 25.12.04
 
