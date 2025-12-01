@@ -5,6 +5,8 @@
 (() => {
   const SLIDEBAR_ACTIVE_CLASS = 'is-open';
   const LOCK_CLASS = 'sb-locked';
+  const SLIDEBAR_TEMPLATE_ID = 'sb-slidebar-template';
+  const DEFAULT_SIDEBAR_ID = 'sb-sidebar-left';
   const HEADROOM_BREAKPOINT = 927;
   const HEADROOM_OFFSET = 40;
   const HEADROOM_TOLERANCE_UP = 20;
@@ -22,6 +24,22 @@
       state.sidebars.set(sidebar.id, sidebar);
       sidebar.setAttribute('aria-hidden', 'true');
     });
+  }
+
+  function renderSidebarFromTemplate(id) {
+    if (getSidebar(id)) {
+      return getSidebar(id);
+    }
+
+    const template = document.getElementById(SLIDEBAR_TEMPLATE_ID);
+    if (!template || !template.content) {
+      return null;
+    }
+
+    const clone = template.content.cloneNode(true);
+    document.body.appendChild(clone);
+    cacheSidebars();
+    return getSidebar(id);
   }
 
   function getSidebar(id) {
@@ -64,7 +82,7 @@
   }
 
   function openSidebar(id, { focusSearch } = {}) {
-    const sidebar = getSidebar(id);
+    const sidebar = getSidebar(id) || renderSidebarFromTemplate(id);
     if (!sidebar) {
       return;
     }
@@ -132,14 +150,19 @@
   function initSlidebar() {
     cacheSidebars();
 
-    if (!state.sidebars.size) {
+    const hasTemplate = Boolean(document.getElementById(SLIDEBAR_TEMPLATE_ID));
+
+    if (!state.sidebars.size && !hasTemplate) {
       return;
     }
 
-    ensureOverlay();
-
     const toggleSelector = '.sb-toggle-left, .sb-toggle-right, .sb-open-left, .sb-open-right, .sb-close';
-    const defaultSidebarId = state.sidebars.size === 1 ? state.sidebars.keys().next().value : null;
+    const defaultSidebarId =
+      state.sidebars.size === 1
+        ? state.sidebars.keys().next().value
+        : hasTemplate
+          ? DEFAULT_SIDEBAR_ID
+          : null;
     const toggles = Array.from(document.querySelectorAll(toggleSelector));
 
     toggles.forEach((toggle) => {
