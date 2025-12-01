@@ -138,9 +138,9 @@
 	*,
 	*::before,
 	*::after {
-		animation-duration: 0.001ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.001ms !important;
+		animation-duration: 0s;
+		animation-iteration-count: 1;
+		transition-duration: 0s;
 	}
 }
 
@@ -1270,7 +1270,7 @@ Content Area
 .page-template-page-archive_tmpl-php .content,
 .search .content {
         display: grid;
-        gap: 2rem;
+        gap: var(--spacing-lg);
         grid-template-columns: minmax(0, 1fr);
 }
 
@@ -1282,37 +1282,43 @@ Content Area
 .search .content .entry{
         position: relative;
         margin: 0;
-        /* padding-bottom: 2rem; */
         width: 100%;
 }
 
+/* Post card (BEM + legacy aliases) */
+.oc-card {
+	display: block;
+}
+
+.oc-card__inner,
 .full-post-container {
     align-items: center;
     display: flex;
+    gap: var(--spacing-lg);
 }
 
-.post-left-col{
-	width: 55%;
-}
-
-.post-right-col{
-	padding: 1.4rem 1.4rem 0;
-	position: initial;
-	text-align: center;
-	vertical-align: middle;
-	width: 50%;
-}
-
+.oc-card__inner--reversed,
 .full-post-container.odd {
     flex-direction: row-reverse;
 }
 
-/*.archive.author .full-post-container {
-    flex-direction: row-reverse;
-}*/
+.oc-card__media,
+.post-left-col{
+	width: 55%;
+}
 
+.oc-card__body,
+.post-right-col{
+	padding: var(--spacing-md) var(--spacing-md) 0;
+	position: initial;
+	text-align: center;
+	vertical-align: middle;
+	width: 50%;
+	display: grid;
+	gap: var(--spacing-sm);
+}
 
-
+.oc-card__title,
 .home .content .entry h2, 
 .home .content .entry .author,
 .archive .content .entry h2, 
@@ -1326,9 +1332,10 @@ Content Area
     padding: 0;
     line-height: 2.7rem;
     font-size: 1.5rem;
-    margin: 0 0 .5rem;
+    margin: 0 0 var(--spacing-xs);
 }
 
+.oc-card__title,
 .home .content .entry h2 a,
 .blog .content .entry h2 a,
 .archive .content .entry h2 a,
@@ -1339,12 +1346,31 @@ Content Area
     line-height: 3.5rem;
     font-size: 2.7rem;
 }
+
+.oc-card__meta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-xs);
+	flex-wrap: wrap;
+	font-size: 1.1rem;
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+}
+
+.oc-card__author,
+.oc-card__time,
 .home .content .entry .author, .archive .content .entry .author, .blog .content .entry .author, .search .content .entry .author, .entry-meta .entry-author, .page-template-page-archive_tmpl-php .content .entry .author{
     font-size: 1.1rem;
     color: var(--color-text-muted);
-    padding: 0 1rem .5rem 0;
+    padding: 0 var(--spacing-sm) var(--spacing-xs) 0;
     text-transform: uppercase;
 }
+
+.oc-card__time {
+	padding-right: 0;
+}
+
 .entry-author-name{
 	color: var(--color-text-muted);
 }
@@ -1695,28 +1721,50 @@ Footer Widgets
 }
 
 
-.header-box{
+.header-box,
+.oc-article-header{
 	padding: 0;
 	/* border-bottom: 0.1rem solid #ddd; */
 	margin: 0 auto;
 	text-align: center;
 	max-width: 85rem;
 }
-.single-post .header-box .full-img {
+.single-post .header-box .full-img,
+.oc-article-header__media {
 	min-height: 18.8rem;
 }
-.single-post-category{
+.single-post-category,
+.oc-article-header__category{
 	/* padding: .5rem 0; */
-	margin: 1.8rem 0 1.5rem;
+	margin: var(--spacing-lg) 0 var(--spacing-md);
 }
-.single-post-category a{
+.single-post-category a,
+.oc-article-header__category a{
     font-size: 1.2rem;
     color: var(--color-surface);
-    padding: 0.2rem .5rem;
+    padding: 0.2rem var(--spacing-sm);
     background: var(--color-primary);
     border: .1rem solid rgba(0, 0, 0, 0.09);
     /* margin-right: .1rem; */
     line-height: 1;
+}
+.oc-article-header__title {
+	margin: var(--spacing-md) 0;
+}
+.oc-article-header__meta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--spacing-xs);
+	margin: var(--spacing-md) 0;
+	padding: var(--spacing-sm) 0;
+}
+.oc-article-header__author,
+.oc-article-header__time {
+	color: var(--color-text-muted);
+}
+.oc-article-header__author {
+	padding-right: var(--spacing-sm);
 }
 /* Categorias de colores */
 .single-post-category .animales, .single-post-category .familia {background-color: rgba(50, 205, 50, 0.89);}
@@ -2017,9 +2065,12 @@ Media Queries
 		background-color: var(--color-surface);
 		box-shadow: none;
 	}
+	.oc-card__inner,
 	.full-post-container {
 		display: block;
 	}
+	.oc-card__media,
+	.oc-card__body,
 	.post-left-col,
 	.post-right-col{
 		width: 100%;
@@ -2033,7 +2084,7 @@ Media Queries
         .archive .content .entry,
         .page-template-page-archive_tmpl-php .content .entry,
         .search .content .entry {
-                margin: 0 auto 2.5rem;
+                margin: 0 auto var(--spacing-xl);
                 max-width: 52rem;
                 width: 100%;
         }
@@ -2359,7 +2410,7 @@ body.sidebar-locked {
 }
 
 #sidebar-offcanvas-right {
-	display: none !important;
+	display: none;
 }
 
 @media (min-width: 600px) {

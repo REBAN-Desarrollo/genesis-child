@@ -2,6 +2,13 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.27
+
+- Home/archivo/blog/search migran a tarjetas BEM (`oc-card`) con contenedores, media y meta alineados; se eliminan separadores manuales de fecha/autor y se conservan clases legacy para compatibilidad.
+- Header de single adopta bloque BEM (`oc-article-header*`) con meta en flex y espaciado vía tokens para títulos/categorías.
+- Los espaciados clave ahora usan tokens (`--spacing-*`) en tarjetas y header; se alinea el CSS crítico de home con los nuevos paddings/gaps.
+- Limpieza de `!important` innecesarios (prefers-reduced-motion y sidebar derecho) y version bump del tema.
+
 ## 25.12.26
 
 - CSS crítico (home/blog, páginas y single) se sirve desde archivos externos `critical-*.css` con `filemtime` para cache busting y rutas de fuentes relativas al child theme en vez de paths hardcodeados.

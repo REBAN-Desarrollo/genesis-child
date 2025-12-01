@@ -141,7 +141,7 @@ function reban_single_header() {
 
     reban_single_remove_meta();
     ?>
-    <div class="header-box">
+    <div class="header-box oc-article-header">
         <?php reban_single_author_box( $author_id, $post_id ); ?>
         <?php reban_single_featured_image( $thumbnail_id ); ?>
     </div>
@@ -167,17 +167,17 @@ function reban_single_author_box( $author_id, $post_id ) {
     $author_name = get_the_author_meta( 'display_name', $author_id );
     $categories  = get_the_category_list( ' ', '', $post_id );
     ?>
-    <div class="single-post-category">
+    <div class="single-post-category oc-article-header__category">
         <span><?php echo $categories; ?></span>
     </div>
-    <h1 class="entry-title" itemprop="headline"><?php echo esc_html( get_the_title( $post_id ) ); ?></h1>
-    <p class="entry-meta">Por
-        <span class="entry-author" itemprop="author" itemscope itemtype="https://schema.org/Person">
+    <h1 class="entry-title oc-article-header__title" itemprop="headline"><?php echo esc_html( get_the_title( $post_id ) ); ?></h1>
+    <p class="entry-meta oc-article-header__meta">Por
+        <span class="entry-author oc-article-header__author" itemprop="author" itemscope itemtype="https://schema.org/Person">
             <a href="<?php echo esc_url( $author_url ); ?>" class="entry-author-link" itemprop="url" rel="author">
                 <span class="entry-author-name" itemprop="name"><?php echo esc_html( $author_name ); ?></span>
             </a>
-        </span>&nbsp;|&nbsp;
-        <time itemprop="datePublished" content="<?php echo esc_attr( get_the_date( 'Y-m-d', $post_id ) ); ?>">
+        </span>
+        <time class="oc-article-header__time" itemprop="datePublished" content="<?php echo esc_attr( get_the_date( 'Y-m-d', $post_id ) ); ?>">
             <?php echo esc_html( get_the_date( 'F j Y', $post_id ) ); ?>
         </time>
     </p>
@@ -193,7 +193,7 @@ function reban_single_featured_image( $thumbnail_id ) {
     $image_data  = reban_single_get_featured_image_sources( $thumbnail_id );
     $sizes_value = $image_data['sizes'] ?? '(max-width: 800px) 100vw, 730px';
     ?>
-    <div class="full-img">
+    <div class="full-img oc-article-header__media">
         <?php
         if ( ! empty( $image_data ) && ! empty( $image_data['webp'] ) ) {
             echo '<picture>';

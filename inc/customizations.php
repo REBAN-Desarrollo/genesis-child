@@ -95,9 +95,9 @@ function reban_loop_archive( $args = array() ) {
         $count = 0;
         while ( have_posts() ) {
             the_post(); ?>
-            <div <?php post_class(); ?> id="post-<?php the_ID(); ?>">
-                <div class="full-post-container <?php echo esc_attr( (++$count % 2 ? 'odd' : 'even') ); ?> clearfix">
-                    <div class="post-left-col">
+            <div <?php post_class( array( 'oc-card' ) ); ?> id="post-<?php the_ID(); ?>">
+                <div class="full-post-container oc-card__inner <?php echo esc_attr( (++$count % 2 ? 'oc-card__inner--reversed odd' : 'even') ); ?> clearfix">
+                    <div class="post-left-col oc-card__media">
                         <a href="<?php echo esc_url( get_permalink() ); ?>">
                             <?php
                             $thumbnail_id  = get_post_thumbnail_id();
@@ -117,24 +117,20 @@ function reban_loop_archive( $args = array() ) {
                             ?>
                         </a>
                     </div>
-                    <div class="post-right-col">
-                        <h2>
+                    <div class="post-right-col oc-card__body">
+                        <h2 class="oc-card__title">
                             <a href="<?php echo esc_url( get_permalink() ); ?>" rel="bookmark" title="Permanent Link to <?php the_title_attribute(); ?>">
                                 <?php echo esc_html( get_the_title() ); ?>
                             </a>
                         </h2>
-                        <?php if ( $args['wrap_author_box'] ) : ?>
-                            <div class="<?php echo esc_attr( $args['wrap_author_box'] ); ?>">
-                        <?php endif; ?>
-                                <span class="author">Por <?php the_author_posts_link(); ?></span> |
-                                <span class="time">
-                                    <time itemprop="datePublished" content="<?php echo esc_attr( get_the_date('Y-m-d') ); ?>">
-                                        <?php echo esc_html( get_the_date( $args['date_format'] ) ); ?>
-                                    </time>
-                                </span>
-                        <?php if ( $args['wrap_author_box'] ) : ?>
-                            </div>
-                        <?php endif; ?>
+                        <div class="oc-card__meta<?php echo $args['wrap_author_box'] ? ' ' . esc_attr( $args['wrap_author_box'] ) : ''; ?>">
+                            <span class="author oc-card__author">Por <?php the_author_posts_link(); ?></span>
+                            <span class="time oc-card__time">
+                                <time itemprop="datePublished" content="<?php echo esc_attr( get_the_date('Y-m-d') ); ?>">
+                                    <?php echo esc_html( get_the_date( $args['date_format'] ) ); ?>
+                                </time>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
