@@ -93,6 +93,47 @@ function reban_single_get_featured_image_sources( $thumbnail_id, $size = 'large'
     );
 }
 
+/**
+ * Get width/height for a featured image, including legacy attachments missing metadata.
+ *
+ * @param int $thumbnail_id Attachment ID.
+ * @return array{width:int,height:int}|null
+ */
+function reban_single_get_featured_dimensions( $thumbnail_id ) {
+    static $cache = array();
+
+    if ( isset( $cache[ $thumbnail_id ] ) ) {
+        return $cache[ $thumbnail_id ];
+    }
+
+    $width  = 0;
+    $height = 0;
+
+    if ( $thumbnail_id ) {
+        $meta = wp_get_attachment_metadata( $thumbnail_id );
+        if ( ! empty( $meta['width'] ) && ! empty( $meta['height'] ) ) {
+            $width  = (int) $meta['width'];
+            $height = (int) $meta['height'];
+        } else {
+            $file_path = get_attached_file( $thumbnail_id );
+            if ( $file_path && file_exists( $file_path ) ) {
+                $image_size = getimagesize( $file_path );
+                if ( is_array( $image_size ) && ! empty( $image_size[0] ) && ! empty( $image_size[1] ) ) {
+                    $width  = (int) $image_size[0];
+                    $height = (int) $image_size[1];
+                }
+            }
+        }
+    }
+
+    $cache[ $thumbnail_id ] = ( $width && $height ) ? array(
+        'width'  => $width,
+        'height' => $height,
+    ) : null;
+
+    return $cache[ $thumbnail_id ];
+}
+
 // Preload featured image to improve Largest Contentful Paint (LCP).
 function reban_single_preload_image() {
     if ( ! is_singular() || ! has_post_thumbnail() ) {
@@ -192,9 +233,28 @@ function reban_single_author_box( $author_id, $post_id ) {
 function reban_single_featured_image( $thumbnail_id ) {
     $image_data  = reban_single_get_featured_image_sources( $thumbnail_id );
     $sizes_value = $image_data['sizes'] ?? '(max-width: 800px) 100vw, 730px';
+    $dimensions  = reban_single_get_featured_dimensions( $thumbnail_id );
+    $aspect_attr = '';
+
+    if ( $dimensions ) {
+        $aspect_attr = sprintf( ' style="aspect-ratio: %d / %d;"', $dimensions['width'], $dimensions['height'] );
+    }
     ?>
-    <div class="full-img oc-article-header__media">
+    <div class="full-img oc-article-header__media"<?php echo $aspect_attr; ?>>
         <?php
+        $shared_attrs = array(
+            'class'         => 'aligncenter',
+            'fetchpriority' => 'high',
+            'loading'       => 'eager',
+            'decoding'      => 'async',
+            'sizes'         => $sizes_value,
+        );
+
+        if ( $dimensions ) {
+            $shared_attrs['width']  = $dimensions['width'];
+            $shared_attrs['height'] = $dimensions['height'];
+        }
+
         if ( ! empty( $image_data ) && ! empty( $image_data['webp'] ) ) {
             echo '<picture>';
             echo '<source srcset="' . esc_attr( $image_data['webp']['srcset'] ) . '" sizes="' . esc_attr( $sizes_value ) . '" type="image/webp">';
@@ -203,29 +263,15 @@ function reban_single_featured_image( $thumbnail_id ) {
                 $thumbnail_id,
                 'large',
                 false,
-                array(
-                    'class'         => 'aligncenter',
-                    'fetchpriority' => 'high',
-                    'loading'       => 'eager',
-                    'decoding'      => 'async',
-                    'sizes'         => $sizes_value,
-                )
+                $shared_attrs
             );
             echo '</picture>';
         } else {
-            $img_sizes = array(
-                'class'         => 'aligncenter',
-                'fetchpriority' => 'high',
-                'loading'       => 'eager',
-                'decoding'      => 'async',
-                'sizes'         => $sizes_value,
-            );
-
             echo wp_get_attachment_image(
                 $thumbnail_id,
                 'large',
                 false,
-                $img_sizes
+                $shared_attrs
             );
         }
         ?>

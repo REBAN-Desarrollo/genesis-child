@@ -2,9 +2,22 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.30
+
+- Loop de archivo: thumbnails usan `wp_get_attachment_image()` con `sizes` ajustado al ancho de tarjeta y `width/height` explícitos para fijar el layout y evitar CLS.
+- WPP: `wpp-js` solo se carga en single posts cuando el widget está activo y se imprime con `defer` vía `script_loader_tag` para quitar el bloqueo de render en home/archivo.
+- CSS crítico: reglas de tarjetas/primer fold se mueven a `critical-home.css`/`critical-page.css` y se eliminan de `css/style.css` para bajar el payload async.
+
+## 25.12.29
+
+- Single: el hero ahora fuerza `aspect-ratio` y rellena `width`/`height` de thumbnails antiguos aunque les falte metadata, para reducir layout work y acelerar el pintado del LCP.
+
 ## 25.12.28
 
 - WordPress Popular Posts: se deja de forzar `wpp-js` al footer para respetar el orden original del plugin.
+- WordPress Popular Posts: se usa `defer` vía `script_loader_tag` (recomendación del autor) para que `wpp.min.js` no bloquee el render sin alterar su orden en el head; se conserva la etiqueta original (id/data-*) al inyectar el atributo.
+- Preloads: se eliminan `preconnect`/`dns-prefetch` innecesarios a orÃ­genes de terceros para evitar advertencias de hints sin uso.
+- WPP: ademÃ¡s del filtro `script_loader_tag`, se usa `wp_script_add_data( 'wpp-js', 'strategy', 'defer' )` cuando estÃ¡ disponible para garantizar el `defer` del JS oficial sin romper el orden.
 
 ## 25.12.27
 
@@ -229,5 +242,4 @@ Todas las notas de version del tema okchicas.com.
 - Hooks de cabecera y pie que insertan scripts propios, limpian dependencias innecesarias y personalizan el footer.
 - Registro de menus y sidebars adicionales (header, footer y secciones laterales) via `sidebar.php` (antes `sb-functions.php`).
 - Mejoras de contenido: fechas en espanol, etiquetas accesibles en formularios, incrustaciones ajustadas de YouTube/Instagram y botones de navegacion/autor personalizados.
-
 

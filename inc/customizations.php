@@ -107,13 +107,18 @@ function reban_loop_archive( $args = array() ) {
                                 $thumbnail_alt = get_the_title();
                             }
 
-                            the_post_thumbnail(
-                                'portfolio',
-                                array(
-                                    'alt'     => $thumbnail_alt,
-                                    'loading' => 'lazy',
-                                )
-                            );
+                            if ( $thumbnail_id ) {
+                                echo wp_get_attachment_image(
+                                    $thumbnail_id,
+                                    'portfolio',
+                                    false,
+                                    array(
+                                        'alt'     => $thumbnail_alt,
+                                        'loading' => 'lazy',
+                                        'sizes'   => '(max-width: 600px) 100vw, (max-width: 1024px) 70vw, 520px',
+                                    )
+                                );
+                            }
                             ?>
                         </a>
                     </div>

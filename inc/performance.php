@@ -85,14 +85,6 @@ function reban_perf_preloads() {
         <link rel="preload" href="<?php echo $preloads['poppins_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
         <link rel="preload" href="<?php echo $preloads['proxima_woff2']; ?>" as="font" type="font/woff2" crossorigin="anonymous">
         
-        <link rel="preconnect" href="https://ajax.cloudflare.com" crossorigin>
-        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-        <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
-        <link rel="preconnect" href="https://sb.scorecardresearch.com" crossorigin>
-        <link rel="dns-prefetch" href="//ajax.cloudflare.com/">
-        <link rel="dns-prefetch" href="//googletagmanager.com">
-        <link rel="dns-prefetch" href="//google-analytics.com">
-        <link rel="dns-prefetch" href="//sb.scorecardresearch.com">
         <style id="sidebar-toggle-cls-fix">
             @media (max-width: 944px) {
                 .site-header .wrap {
@@ -169,12 +161,58 @@ function reban_perf_async_css( $html, $handle ) {
 add_filter( 'script_loader_tag', 'reban_perf_async_js', 10, 3 );
 function reban_perf_async_js( $tag, $handle, $src ) {
     // the handles of the enqueued scripts we want to async.
-    $async_scripts = array( CHILD_THEME_NAME, 'wpp-js' );
+    $async_scripts = array( CHILD_THEME_NAME );
+
+    $is_wpp_js = ( strpos( $src, '/wpp.min.js' ) !== false || strpos( $src, '/wpp.js' ) !== false );
+
+    if ( $is_wpp_js ) {
+        // Defer WPP per plugin author's guidance to avoid blocking render while keeping execution order.
+        if ( false === strpos( $tag, 'defer' ) && false === strpos( $tag, 'async' ) ) {
+            // Preserve plugin attributes (id/data-*) and only append defer.
+            $tag = str_replace( '<script ', '<script defer ', $tag );
+        }
+        return $tag;
+    }
 
     if ( in_array( $handle, $async_scripts, true ) ) {
-        return '<script type="text/javascript" async src="' . $src . '"></script>' . "\n";
+        return '<script type="text/javascript" async src="' . esc_url( $src ) . '"></script>' . "\n";
     }
     return $tag;
+}
+
+/**
+ * Hint WordPress to defer WPP when the strategy API is available.
+ */
+add_action(
+    'wp_enqueue_scripts',
+    function () {
+        if ( ! is_admin() && wp_script_is( 'wpp-js', 'registered' ) ) {
+            // `strategy` is available in newer WP versions; fallback handled by script_loader_tag above.
+            wp_script_add_data( 'wpp-js', 'strategy', 'defer' );
+        }
+    },
+    15
+);
+
+add_action( 'wp_enqueue_scripts', 'reban_perf_gate_wpp_assets', 20 );
+/**
+ * Limit WPP assets to single posts where the widget actually renders.
+ */
+function reban_perf_gate_wpp_assets() {
+    if ( is_admin() ) {
+        return;
+    }
+
+    $wpp_handle     = 'wpp-js';
+    $widget_is_used = is_active_widget( false, false, 'wppwidget', true );
+
+    if ( is_singular( 'post' ) && $widget_is_used ) {
+        return;
+    }
+
+    if ( wp_script_is( $wpp_handle, 'enqueued' ) ) {
+        wp_dequeue_script( $wpp_handle );
+    }
 }
 
 // Add missing width/height to inline images so the browser can reserve space and avoid CLS.
