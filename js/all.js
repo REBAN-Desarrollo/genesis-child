@@ -219,8 +219,10 @@
     let pendingY = 0;
     let ticking = false;
     let resizeTimer;
+    let breakpointReadFrame = null;
 
     const readScrollY = () => window.scrollY || window.pageYOffset;
+    const readViewportIsMobile = () => window.innerWidth <= HEADROOM_BREAKPOINT;
 
     const reset = () => {
       header.classList.remove('headroom', 'bajando', 'subiendo', 'noesarriba', 'topando');
@@ -320,18 +322,25 @@
     };
 
     const applyBreakpoint = () => {
-      const isMobile = window.innerWidth <= HEADROOM_BREAKPOINT;
-      if (isMobile === lastViewportIsMobile) {
+      if (breakpointReadFrame) {
         return;
       }
 
-      lastViewportIsMobile = isMobile;
+      breakpointReadFrame = window.requestAnimationFrame(() => {
+        breakpointReadFrame = null;
+        const isMobile = readViewportIsMobile();
+        if (isMobile === lastViewportIsMobile) {
+          return;
+        }
 
-      if (isMobile) {
-        enable();
-      } else {
-        disable();
-      }
+        lastViewportIsMobile = isMobile;
+
+        if (isMobile) {
+          enable();
+        } else {
+          disable();
+        }
+      });
     };
 
     const onResize = () => {

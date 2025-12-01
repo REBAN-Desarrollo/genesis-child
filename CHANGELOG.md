@@ -2,6 +2,10 @@
 
 Todas las notas de version del tema okchicas.com.
 
+## 25.12.23
+
+- Headroom movil lee el breakpoint dentro de `requestAnimationFrame` para agrupar lecturas/escrituras de layout y evitar reflows forzados al alternar clases del header.
+
 ## 25.12.22
 
 - CSS: el line-height global vuelve a 1.6 y se eliminan los `line-height: 0` de contenedores para heredar tipografía consistente sin re-declarar en cada bloque.
