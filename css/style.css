@@ -932,8 +932,7 @@ a.alignright img, img.alignright, .wp-caption.alignright {
 }
 .site-header .wrap {
 	overflow: hidden;
-	padding: 0 0 0;
-	padding: 0 0 0;
+	padding: .8rem 0;
 }
 .mpp-home .site-header .wrap {
 	border: none;

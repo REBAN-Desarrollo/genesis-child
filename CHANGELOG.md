@@ -4,7 +4,7 @@ Todas las notas de version del tema okchicas.com.
 
 ## 25.12.13
 
-- Se elimina el padding/margen vertical del logo en desktop (CSS y critical CSS) y se limita la altura del img del site-title a 110px para evitar huecos debajo del header.
+- Se ajusta el header para dar un padding ligero arriba/abajo al logo (img máx 110px) y centrarlo en desktop, replicado en el critical CSS global/single para que no haya huecos raros al cargar.
 
 ## 25.12.12
 
