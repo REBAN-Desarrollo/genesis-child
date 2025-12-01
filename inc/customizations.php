@@ -12,6 +12,63 @@ function reban_custom_date_format() {
     return date_i18n( 'F j, Y', get_the_time( 'U' ) );
 }
 
+add_filter( 'genesis_seo_title', 'reban_site_title_with_logo', 10, 3 );
+/**
+ * Renderiza el titulo del sitio con logo (custom, header o fallback).
+ *
+ * @param string $title  Markup actual.
+ * @param string $inside Contenido interno.
+ * @param string $wrap   Etiqueta contenedora (p/h1).
+ * @return string
+ */
+function reban_site_title_with_logo( $title, $inside, $wrap ) {
+    $logo_src = '';
+    $width    = 0;
+    $height   = 0;
+
+    if ( has_custom_logo() ) {
+        $custom_logo_id = get_theme_mod( 'custom_logo' );
+        $custom_logo    = $custom_logo_id ? wp_get_attachment_image_src( $custom_logo_id, 'full' ) : false;
+        if ( $custom_logo ) {
+            list( $logo_src, $width, $height ) = $custom_logo;
+        }
+    } elseif ( get_header_image() ) {
+        $header   = get_custom_header();
+        $logo_src = get_header_image();
+        $width    = $header ? (int) $header->width : 0;
+        $height   = $header ? (int) $header->height : 0;
+    } else {
+        $fallback_path = get_stylesheet_directory() . '/images/Logo-OK-circulo-619x110-02.png';
+        $logo_src      = get_stylesheet_directory_uri() . '/images/Logo-OK-circulo-619x110-02.png';
+        if ( file_exists( $fallback_path ) ) {
+            $logo_src = add_query_arg( 'v', filemtime( $fallback_path ), $logo_src );
+        }
+        $width  = 619;
+        $height = 110;
+    }
+
+    if ( ! $logo_src ) {
+        return $title;
+    }
+
+    $home = esc_url( home_url( '/' ) );
+    $alt  = esc_attr( get_bloginfo( 'name' ) );
+
+    $dimensions = '';
+    if ( $width && $height ) {
+        $dimensions = sprintf( ' width="%d" height="%d"', $width, $height );
+    }
+
+    return sprintf(
+        '<%1$s class="site-title"><a href="%2$s" rel="home"><img src="%3$s"%4$s alt="%5$s"></a></%1$s>',
+        esc_attr( $wrap ),
+        $home,
+        esc_url( $logo_src ),
+        $dimensions,
+        $alt
+    );
+}
+
 /**
  * Shared post loop used by home, archive and search templates.
  *
@@ -135,20 +192,7 @@ add_filter( 'genesis_search_text', 'reban_custom_search_text' );
 function reban_custom_search_text( $text ) {
     return esc_attr( 'Buscar en el sitio' );
 }
-add_action( 'genesis_header', 'reban_custom_search_form' );
-function reban_custom_search_form() {
-    $search_id = wp_unique_id( 'search-' );
-?>
-        <div class="responsive-search sb-right clearfix">
-                <form role="search" method="get" class="search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-                        <label for="<?php echo esc_attr( $search_id ); ?>">Busqueda:
-                                        <input id="<?php echo esc_attr( $search_id ); ?>" type="text" value="<?php echo esc_attr( get_search_query() ); ?>" name="s" class="search-input" placeholder="Buscar en el sitio" />
-                        </label>
-                        <input type="submit" class="search-submit" value="Buscar" aria-label="Buscar"/>
-                </form>
-        </div>
-<?php
-}
+// Buscador del header desactivado; el buscador vive en la slidebar izquierda.
 
 /* Custom embeds
     1 - Youtube Videos remove show info related etc

@@ -11,6 +11,15 @@ Todas las notas de version del tema okchicas.com.
 
 - Se reactiva la slidebar izquierda con buscador y menú primario fijos (sin `dynamic_sidebar`) y vuelven los toggles en header/menú para abrirla.
 
+## 25.12.07
+
+- Se quita el padding global de `#sb-site` (CSS y critical CSS) para que el lienzo sea full width y no encajone el contenido.
+- El header vuelve a mostrar un logo (custom, header o fallback del tema) via filtro `genesis_seo_title`, y se desactiva el buscador duplicado del header.
+
+## 25.12.08
+
+- Se separa el off-canvas a `sb-offcanvas.php` y se restaura `sidebar.php` como plantilla de sidebar primario (Genesis) para que reaparezca la barra lateral derecha en single.
+
 ## 25.12.04
 
 - Simplificamos la deteccion de bajada en headroom al quitar la comprobacion redundante de distancia.
