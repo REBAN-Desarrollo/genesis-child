@@ -91,6 +91,60 @@ function reban_perf_minify_css( $css ) {
 }
 
 /**
+ * Cache and return critical CSS contents for a given template type.
+ *
+ * @param string $type Template type suffix (e.g. 'home', 'page').
+ * @return array|null Array with 'css' and 'version' keys or null on failure.
+ */
+function reban_perf_get_critical_css( $type ) {
+    $type = $type ?: 'home';
+
+    $theme_dir      = get_stylesheet_directory();
+    $critical_path  = $theme_dir . '/critical-' . $type . '.css';
+    $tokens_path    = $theme_dir . '/css/design-tokens.css';
+    $tokens_mtime   = file_exists( $tokens_path ) ? filemtime( $tokens_path ) : null;
+
+    if ( ! file_exists( $critical_path ) ) {
+        return null;
+    }
+
+    $last_modified = filemtime( $critical_path );
+    $cache_key     = 'reban_critical_' . sanitize_key( $type );
+    $version_bits  = array_filter( array( $last_modified, $tokens_mtime ) );
+    $version_key   = $version_bits ? "{$cache_key}_" . implode( '_', $version_bits ) : $cache_key;
+    $cached        = get_transient( $version_key );
+
+    if ( false !== $cached ) {
+        return array(
+            'css'     => $cached,
+            'version' => $last_modified,
+        );
+    }
+
+    $critical_css = file_get_contents( $critical_path );
+
+    if ( false === $critical_css ) {
+        return null;
+    }
+
+    // Design tokens are now inlined separately in wp_head to eliminate render-blocking.
+    // Strip them from critical CSS to avoid duplication.
+    $critical_css = preg_replace( '~^:root\\s*\\{[^}]*\\}\\s*~i', '', $critical_css );
+    $critical_css = preg_replace( '~@media\\s*\\(prefers-reduced-motion:reduce\\)\\s*\\{[^}]*\\}\\s*~i', '', $critical_css );
+    $critical_css = preg_replace( '~i\\[class\\^=\"icon-\"[^}]*\\}\\s*~i', '', $critical_css );
+    $critical_css = preg_replace( '~\\.icon-[a-z0-9_-]+:before\\s*\\{[^}]*\\}\\s*~i', '', $critical_css );
+
+    $critical_css = reban_perf_minify_css( reban_perf_inline_font_urls( $critical_css ) );
+
+    set_transient( $version_key, $critical_css, HOUR_IN_SECONDS );
+
+    return array(
+        'css'     => $critical_css,
+        'version' => $last_modified,
+    );
+}
+
+/**
  * Map a URL to a local path when it lives in uploads or the child theme.
  *
  * @param string $url URL to map.
@@ -178,7 +232,7 @@ function reban_perf_get_logo_asset() {
     $custom_logo    = $custom_logo_id ? wp_get_attachment_image_src( $custom_logo_id, 'full' ) : false;
 
     if ( $custom_logo ) {
-        list( $logo_src, $width, $height ) = $custom_logo;
+        [ $logo_src, $width, $height ] = $custom_logo;
     } elseif ( get_header_image() ) {
         $header   = get_custom_header();
         $logo_src = get_header_image();
@@ -275,7 +329,7 @@ function reban_perf_version_logo_markup( $html ) {
 add_action( 'wp_head', 'reban_perf_preloads', 2 );
 function reban_perf_preloads() {
     $theme_dir = get_stylesheet_directory();
-    list( $logo_src, $logo_width, $logo_height ) = reban_perf_get_logo_asset();
+    [ $logo_src, $logo_width, $logo_height ] = reban_perf_get_logo_asset();
 
     $preloads = array(
         'reban_woff2'   => reban_perf_versioned_asset( '/fonts/rebanfont.woff2' ),
@@ -289,44 +343,45 @@ function reban_perf_preloads() {
         <link rel="preload" href="<?php echo esc_url( $preloads['reban_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
         <link rel="preload" href="<?php echo esc_url( $preloads['poppins_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
         <link rel="preload" href="<?php echo esc_url( $preloads['proxima_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
-        
-        <style id="sidebar-toggle-cls-fix">@media (max-width:944px){.site-header .wrap{position:relative}.site-header .wrap>a.sidebar-toggle-left,.site-header .wrap>a.sidebar-toggle-right{display:inline-flex;align-items:center;justify-content:center;width:3.6rem;height:3.6rem;padding:.5rem;position:absolute;top:50%;transform:translateY(-50%);line-height:1}.site-header .wrap>a.sidebar-toggle-left{left:1rem}.site-header .wrap>a.sidebar-toggle-right{right:.1rem}.nav-primary .menu li.mobile-item>a.sidebar-toggle-left{display:inline-flex;align-items:center;justify-content:center;width:3.6rem;height:3.6rem;padding:.5rem}}.sidebar-toggle-left .icon-menu,.sidebar-toggle-right .icon-menu{display:block;line-height:1;width:1em;height:1em}</style>
+
+        <style id="sidebar-toggle-cls-fix">.sidebar-toggle-left,.sidebar-toggle-right{background:transparent;border:0;padding:0;color:inherit;display:none}@media (max-width:944px){.site-header .wrap{position:relative}.site-header .wrap>.sidebar-toggle-left,.site-header .wrap>.sidebar-toggle-right{display:inline-flex;align-items:center;justify-content:center;width:3.6rem;height:3.6rem;padding:.5rem;position:absolute;top:50%;transform:translateY(-50%);line-height:1}.site-header .wrap>.sidebar-toggle-left{left:1rem}.site-header .wrap>.sidebar-toggle-right{right:.1rem}.nav-primary .menu li.mobile-item>.sidebar-toggle-left{display:inline-flex;align-items:center;justify-content:center;width:3.6rem;height:3.6rem;padding:.5rem}}.sidebar-toggle-left .icon-menu,.sidebar-toggle-right .icon-menu{display:block;line-height:1;width:1em;height:1em}</style>
     <?php
+    // Inline design tokens for all pages to eliminate render-blocking CSS
+    $tokens_path = $theme_dir . '/css/design-tokens.css';
+    if ( file_exists( $tokens_path ) ) {
+        $tokens_css = file_get_contents( $tokens_path );
+        if ( $tokens_css ) {
+            $tokens_css = reban_perf_minify_css( reban_perf_inline_font_urls( $tokens_css ) );
+            echo '<style id="reban-design-tokens-inline">' . $tokens_css . '</style>';
+        }
+    }
+
     if ( is_singular( 'post' ) ) {
         return;
     }
 
-    $critical_relative = is_page() ? '/critical-page.css' : '/critical-home.css';
-    $critical_path     = $theme_dir . $critical_relative;
+    $critical_type = is_page() ? 'page' : 'home';
+    $critical_data = reban_perf_get_critical_css( $critical_type );
 
-    if ( ! file_exists( $critical_path ) ) {
+    if ( empty( $critical_data['css'] ) ) {
         return;
     }
 
-    $critical_css = file_get_contents( $critical_path );
-
-    if ( false === $critical_css ) {
-        return;
-    }
-
-    $critical_css = reban_perf_minify_css( reban_perf_inline_font_urls( $critical_css ) );
-
-    $style_id      = is_page() ? 'reban-critical-page' : 'reban-critical-home';
-    $last_modified = filemtime( $critical_path );
-    $version_attr  = $last_modified ? ' data-version="' . esc_attr( $last_modified ) . '"' : '';
+    $style_id     = is_page() ? 'reban-critical-page' : 'reban-critical-home';
+    $version_attr = ! empty( $critical_data['version'] ) ? ' data-version="' . esc_attr( $critical_data['version'] ) . '"' : '';
 
     printf(
         '<style id="%1$s" data-type="inline-critical"%2$s>%3$s</style>',
         esc_attr( $style_id ),
         $version_attr,
-        $critical_css
+        $critical_data['css']
     );
 }
 
 // Transform styles.css markup to load CSS asynchronously and add style.css on head position #2.
 add_filter( 'style_loader_tag', 'reban_perf_async_css', 10, 2 );
 function reban_perf_async_css( $html, $handle ) {
-    if ( $handle == CHILD_THEME_NAME ) {
+    if ( $handle === CHILD_THEME_NAME ) {
         $async_html = preg_replace(
             '/media=("|\')all\\1/',
             'media=$1print$1 onload="this.media=\'all\'"',
@@ -349,17 +404,30 @@ function reban_perf_async_js( $tag, $handle, $src ) {
     return $tag;
 }
 
-// Keep WordPress Popular Posts tracker non-blocking even when it registers late.
-add_action( 'wp_enqueue_scripts', 'reban_perf_prepare_wpp_tracker', 15 );
-function reban_perf_prepare_wpp_tracker() {
+// Dequeue WPP from head and re-enqueue in footer
+add_action( 'wp_enqueue_scripts', 'reban_perf_dequeue_wpp_from_head', PHP_INT_MAX );
+function reban_perf_dequeue_wpp_from_head() {
+    if ( is_admin() ) {
+        return;
+    }
+
+    // Dequeue if it's registered in head
+    if ( wp_script_is( 'wpp-js', 'enqueued' ) || wp_script_is( 'wpp-js', 'registered' ) ) {
+        wp_dequeue_script( 'wpp-js' );
+    }
+}
+
+// Re-register WPP in footer with defer
+add_action( 'wp_footer', 'reban_perf_enqueue_wpp_in_footer', 1 );
+function reban_perf_enqueue_wpp_in_footer() {
     if ( is_admin() ) {
         return;
     }
 
     global $post;
 
+    // Only load on singular posts or pages with wpp shortcode
     $needs_wpp = is_singular( 'post' );
-
     if ( $post && has_shortcode( $post->post_content, 'wpp' ) ) {
         $needs_wpp = true;
     }
@@ -368,28 +436,57 @@ function reban_perf_prepare_wpp_tracker() {
         return;
     }
 
-    if ( wp_script_is( 'wpp-js', 'registered' ) && ! wp_script_is( 'wpp-js', 'enqueued' ) ) {
-        wp_enqueue_script( 'wpp-js' );
+    // Check if WPP plugin is active and script exists
+    $wpp_script_path = WP_PLUGIN_DIR . '/wordpress-popular-posts/assets/js/wpp.min.js';
+    if ( ! file_exists( $wpp_script_path ) ) {
+        return;
     }
 
-    if ( wp_script_is( 'wpp-js', 'registered' ) || wp_script_is( 'wpp-js', 'enqueued' ) ) {
-        wp_script_add_data( 'wpp-js', 'strategy', 'defer' );
-    }
+    // Get WPP version
+    $wpp_data = get_file_data( $wpp_script_path, array( 'Version' => 'Version' ) );
+    $version = ! empty( $wpp_data['Version'] ) ? $wpp_data['Version'] : filemtime( $wpp_script_path );
+
+    // Register and enqueue in footer
+    wp_register_script(
+        'wpp-js-deferred',
+        plugins_url( 'wordpress-popular-posts/assets/js/wpp.min.js' ),
+        array(),
+        $version,
+        true // in footer
+    );
+
+    // Add same data attributes that WPP expects
+    $wpp_params = array(
+        'sampling_active' => 1,
+        'sampling_rate' => 20,
+        'ajax_url' => admin_url( 'admin-ajax.php' ),
+        'ID' => get_the_ID(),
+        'token' => wp_create_nonce( 'wpp-token' ),
+        'lang' => 0,
+        'debug' => 0,
+    );
+
+    wp_localize_script( 'wpp-js-deferred', 'wpp_params', $wpp_params );
+    wp_enqueue_script( 'wpp-js-deferred' );
 }
 
-// Fallback: enforce defer on the final tag when strategies are stripped.
+// Force defer attribute on final tag
 add_filter( 'script_loader_tag', 'reban_perf_force_wpp_defer', 10, 3 );
 function reban_perf_force_wpp_defer( $tag, $handle, $src ) {
-    $is_wpp = ( 'wpp-js' === $handle ) || ( $src && false !== strpos( $src, '/wordpress-popular-posts/' ) );
+    // Target both original and our deferred version
+    $is_wpp = in_array( $handle, array( 'wpp-js', 'wpp-js-deferred' ), true ) ||
+              ( $src && false !== strpos( $src, '/wordpress-popular-posts/' ) );
 
     if ( ! $is_wpp ) {
         return $tag;
     }
 
+    // Already has defer or async? return as is
     if ( stripos( $tag, 'defer' ) !== false || stripos( $tag, 'async' ) !== false ) {
         return $tag;
     }
 
+    // Add defer attribute
     return preg_replace( '/<script\\s+/i', '<script defer ', $tag, 1 );
 }
 
@@ -449,9 +546,9 @@ function reban_perf_get_content_image_size( $src, $uploads ) {
     $paths_to_try = array_values( array_unique( $paths_to_try ) );
 
     foreach ( $paths_to_try as $path ) {
-        if ( file_exists( $path ) ) {
-            $image_size = @getimagesize( $path );
-            if ( $image_size ) {
+        if ( file_exists( $path ) && is_file( $path ) ) {
+            $image_size = getimagesize( $path );
+            if ( is_array( $image_size ) && ! empty( $image_size[0] ) && ! empty( $image_size[1] ) ) {
                 $dimension_cache[ $src ] = array(
                     (int) $image_size[0],
                     (int) $image_size[1],
@@ -524,5 +621,3 @@ function reban_perf_fill_image_dimensions( $content ) {
         $content
     );
 }
-
-

@@ -9,6 +9,9 @@ remove_action( 'genesis_meta', 'genesis_load_stylesheet' );
 // 2 - Replace style.css with a date query string when modified.
 add_action( 'wp_enqueue_scripts', 'reban_assets_css' );
 function reban_assets_css() {
+    // Design tokens are now inlined in performance.php for better LCP
+    // No need to enqueue separately as it was render-blocking
+
     $stylesheet_uri = get_stylesheet_directory_uri() . '/css/style.css';
     $stylesheet_dir = get_stylesheet_directory() . '/css/style.css';
     $last_modified  = filemtime( $stylesheet_dir ); // segundos exactos para bustear cache al guardar

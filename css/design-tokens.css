@@ -1,0 +1,78 @@
+/* Shared design tokens and motion/accessibility primitives. */
+:root {
+  --color-primary: #d6006b;
+  --color-accent: #0096d6;
+  --color-highlight: #f83371;
+  --color-highlight-strong: #ac0d12;
+  --color-surface-contrast: #333;
+  --color-text: #000;
+  --color-text-muted: #5A5959;
+  --color-text-soft: #999;
+  --color-surface: #ffffff;
+  --color-surface-dark: #222;
+  --color-border: #ccc;
+  --color-border-strong: #BFBDBD;
+  --font-primary: 'Poppins', 'Poppins-fallback', sans-serif;
+  --font-secondary: 'Proxima Nova', 'Proxima-fallback', sans-serif;
+  --font-icon: 'rebanfont';
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 2.5rem;
+  --radius-sm: 0.3rem;
+  --focus-ring: 0 0 0 0.3rem rgba(214, 0, 107, 0.5);
+  --focus-ring-offset: 0.2rem;
+  --slidebar-width: 28rem;
+  --slidebar-bg: #16171b;
+  --slidebar-surface: #1f2025;
+  --slidebar-border: rgba(214, 0, 107, 0.35);
+  --slidebar-text: #f2f2f2;
+  --scrollbar-compensation: 0px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0s;
+		animation-iteration-count: 1;
+		transition-duration: 0s;
+	}
+}
+
+/* icomoon.io fonts */
+i[class^="icon-"],
+i[class*=" icon-"] {
+  /* keep icon font locked to the glyph set even if extensions tweak fonts */
+  font-family: var(--font-icon);
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-search:before { content: "\e900"; }
+.icon-menu:before { content: "\e901"; }
+.icon-mail:before { content: "\e902"; }
+.icon-trending:before { content: "\e907"; }
+.icon-angle-down:before { content: "\e905"; }
+.icon-angle-up:before { content: "\e906"; }
+.icon-comments:before { content: "\e970"; }
+.icon-facebook:before { content: "\ea90"; }
+.icon-instagram:before { content: "\ea92"; }
+.icon-spotify:before { content: "\ea94"; }
+.icon-twitter:before { content: "\ea96"; }
+.icon-rss:before { content: "\ea9b"; }
+.icon-youtube:before { content: "\ea9d"; }
+.icon-pinterest:before { content: "\ead1"; }

@@ -98,111 +98,6 @@
     src: local(Corbel);
 }
 
-:root {
-  --color-primary: #d6006b;
-  --color-accent: #0096d6;
-  --color-highlight: #f83371;
-  --color-highlight-strong: #ac0d12;
-  --color-surface-contrast: #333;
-  --color-text: #000;
-  --color-text-muted: #5A5959;
-  --color-text-soft: #999;
-  --color-surface: #ffffff;
-  --color-surface-dark: #222;
-  --color-border: #ccc;
-  --color-border-strong: #BFBDBD;
-  --font-primary: 'Poppins', 'Poppins-fallback', sans-serif;
-  --font-secondary: 'Proxima Nova', 'Proxima-fallback', sans-serif;
-  --font-icon: 'rebanfont';
-  --spacing-xs: 0.5rem;
-  --spacing-sm: 1rem;
-  --spacing-md: 1.5rem;
-  --spacing-lg: 2rem;
-  --spacing-xl: 2.5rem;
-  --radius-sm: 0.3rem;
-  --focus-ring: 0 0 0 0.3rem rgba(214, 0, 107, 0.5);
-  --focus-ring-offset: 0.2rem;
-  --slidebar-width: 28rem;
-  --slidebar-bg: #16171b;
-  --slidebar-surface: #1f2025;
-  --slidebar-border: rgba(214, 0, 107, 0.35);
-  --slidebar-text: #f2f2f2;
-  --scrollbar-compensation: 0px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-	:root {
-		scroll-behavior: auto;
-	}
-
-	*,
-	*::before,
-	*::after {
-		animation-duration: 0s;
-		animation-iteration-count: 1;
-		transition-duration: 0s;
-	}
-}
-
-/* icomoon.io fonts */
-i[class^="icon-"],
-i[class*=" icon-"] {
-  /* keep icon font locked to the glyph set even if extensions tweak fonts */
-  font-family: var(--font-icon);
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.icon-search:before {
-  content: "\e900";
-}
-.icon-menu:before {
-  content: "\e901";
-}
-.icon-mail:before {
-  content: "\e902";
-}
-.icon-trending:before {
-  content: "\e907";
-}
-.icon-angle-down:before {
-  content: "\e905";
-}
-.icon-angle-up:before {
-  content: "\e906";
-}
-.icon-comments:before {
-  content: "\e970";
-}
-.icon-facebook:before {
-  content: "\ea90";
-}
-.icon-instagram:before {
-  content: "\ea92";
-}
-.icon-spotify:before {
-  content: "\ea94";
-}
-.icon-twitter:before {
-  content: "\ea96";
-}
-.icon-rss:before {
-  content: "\ea9b";
-}
-.icon-youtube:before {
-  content: "\ea9d";
-}
-.icon-pinterest:before {
-  content: "\ead1";
-}
 /*
 HTML5 Reset
 ---------------------------------------------------------------------------------------------------- */
@@ -660,18 +555,6 @@ pre {
     font-size: 2.3rem;    margin-top: .2rem;    margin-bottom: 1rem;    color: var(--color-text);
  
 }
-
-@media (min-width: 945px) {
-	.sidebar .widget:last-child {
-		position: sticky;
-		top: 0;
-	}
-
-	body.admin-bar .sidebar .widget:last-child {
-		top: 3.2rem;
-	}
-}
-
 
 /* Column Classes
    Link: http://twitter.github.io/bootstrap/assets/css/bootstrap-responsive.css
@@ -1700,6 +1583,23 @@ Footer Widgets
 /*
 Media Queries
 ---------------------------------------------------------------------------------------------------- */
+@media (min-width: 945px) {
+	.sidebar .widget:last-child {
+		position: sticky;
+		top: 0;
+	}
+
+	body.admin-bar .sidebar .widget:last-child {
+		top: 3.2rem;
+	}
+}
+
+@media (min-width: 600px) {
+	.sidebar-slidebar .responsive-search .search-submit .search-submit-text {
+		display: inline;
+	}
+}
+
 @media only screen and (max-width: 1200px) {
 	.site-inner,
 	.wrap {
@@ -2019,7 +1919,6 @@ Media Queries
 		}
 }
 
-
 /* Off-canvas navigation */
 .sidebar-overlay {
 	position: fixed;
@@ -2254,12 +2153,6 @@ body.sidebar-locked {
 	display: none;
 }
 
-@media (min-width: 600px) {
-	.sidebar-slidebar .responsive-search .search-submit .search-submit-text {
-		display: inline;
-	}
-}
-
 .sidebar-submenu {
 	display: none;
 	padding: 0;
@@ -2354,7 +2247,7 @@ i.fa {
     color: #5E5E5E;
 }
 .credit-wrapper {
-  display: none;
+  display: block;
 }
 ol.credit-full-sources {
   color: #bbb;
@@ -2423,10 +2316,16 @@ ol.credit-full-sources li p {
     width: 100vw;
     left: calc(-50vw + 50%);
     background-color: #fff;
+    min-height: 250px;
 }
 .topbillboard > div[id^="div-gpt-ad"],
 .topbillboard iframe {
     background-color: #fff;
+}
+@media only screen and (max-width: 768px) {
+    .topbillboard {
+        min-height: 100px;
+    }
 }
 .blog-posts span {
     font-size: 1.6rem;

@@ -327,8 +327,9 @@
       }
 
       breakpointReadFrame = window.requestAnimationFrame(() => {
-        breakpointReadFrame = null;
         const isMobile = readViewportIsMobile();
+        breakpointReadFrame = null;
+
         if (isMobile === lastViewportIsMobile) {
           return;
         }

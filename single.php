@@ -17,36 +17,26 @@ function reban_single_init() {
     // Extras / cleanup.
     add_action( 'wp_print_styles', 'reban_single_remove_yarpp_css' );
     add_action( 'wp_footer', 'reban_single_remove_yarpp_css' );
-    add_action( 'genesis_before_footer', 'custom_related_posts' );
-    add_action( 'genesis_after_entry', 'mpp_after_entry', 5 );
+    add_action( 'genesis_before_footer', 'reban_related_posts' );
+    add_action( 'genesis_after_entry', 'reban_mpp_after_entry', 5 );
 }
 
 /**
  * Critical CSS for single posts inlined into the head.
  */
 function reban_single_critical_css() {
-    $critical_relative = '/critical-single.css';
-    $critical_path     = get_stylesheet_directory() . $critical_relative;
+    $critical_data = reban_perf_get_critical_css( 'single' );
 
-    if ( ! file_exists( $critical_path ) ) {
+    if ( empty( $critical_data['css'] ) ) {
         return;
     }
 
-    $critical_css = file_get_contents( $critical_path );
-
-    if ( false === $critical_css ) {
-        return;
-    }
-
-    $critical_css = reban_perf_minify_css( reban_perf_inline_font_urls( $critical_css ) );
-
-    $last_modified = filemtime( $critical_path );
-    $version_attr  = $last_modified ? ' data-version="' . esc_attr( $last_modified ) . '"' : '';
+    $version_attr = ! empty( $critical_data['version'] ) ? ' data-version="' . esc_attr( $critical_data['version'] ) . '"' : '';
 
     printf(
         '<style id="reban-critical-single" data-type="inline-critical"%1$s>%2$s</style>',
         $version_attr,
-        $critical_css
+        $critical_data['css']
     );
 }
 
@@ -218,7 +208,7 @@ function reban_single_author_box( $author_id, $post_id ) {
     $categories  = get_the_category_list( ' ', '', $post_id );
     ?>
     <div class="single-post-category oc-article-header__category">
-        <span><?php echo $categories; ?></span>
+        <span><?php echo wp_kses_post( $categories ); ?></span>
     </div>
     <h1 class="entry-title oc-article-header__title" itemprop="headline"><?php echo esc_html( get_the_title( $post_id ) ); ?></h1>
     <p class="entry-meta oc-article-header__meta">Por
@@ -246,10 +236,10 @@ function reban_single_featured_image( $thumbnail_id ) {
     $aspect_attr = '';
 
     if ( $dimensions ) {
-        $aspect_attr = sprintf( ' style="aspect-ratio: %d / %d;"', $dimensions['width'], $dimensions['height'] );
+        $aspect_attr = sprintf( ' style="aspect-ratio: %d / %d;"', (int) $dimensions['width'], (int) $dimensions['height'] );
     }
     ?>
-    <div class="full-img oc-article-header__media"<?php echo $aspect_attr; ?>>
+    <div class="full-img oc-article-header__media"<?php echo $aspect_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already sanitized with (int) cast. ?>>
         <?php
         $shared_attrs = array(
             'class'         => 'aligncenter',
@@ -289,39 +279,45 @@ function reban_single_featured_image( $thumbnail_id ) {
 }
 
 // Wordpress Popular Posts & YARPP Related at the end of posts.
-function custom_related_posts() {
+function reban_related_posts() {
     ?>
     <div class="custom-related-posts clearfix">
         <div class="yarpp-related">
             <?php
-            $args = array(
-                'header'          => 'Tendencias',
-                'header_start'    => '<div style="text-align:center"><h3 id="tendencias" class="trending-title"><i class="icon-trending"> </i>',
-                'header_end'      => '</h3></div>',
-                'wpp_start'       => '<div class="yarpp-grids">',
-                'wpp_end'         => '</div>',
-                'post_html'       => '<a href="{url}" class="yarpp-thumbnail"><img src="{thumb_url}" width="360" height="188" alt="{text_title}" loading="lazy" /><div class="desc"><span>{text_title}</span></div></a>',
-                'post_type'       => 'post',
-                'limit'           => 6,
-                'range'           => 'custom',
-                'time_quantity'   => 3,
-                'time_unit'       => 'day',
-                'freshness'       => 0,
-                'thumbnail_width' => 360,
-                'thumbnail_height'=> 188,
-            );
-            wpp_get_mostpopular( $args );
+            if ( function_exists( 'wpp_get_mostpopular' ) ) {
+                $args = array(
+                    'header'          => 'Tendencias',
+                    'header_start'    => '<div style="text-align:center"><h3 id="tendencias" class="trending-title"><i class="icon-trending"> </i>',
+                    'header_end'      => '</h3></div>',
+                    'wpp_start'       => '<div class="yarpp-grids">',
+                    'wpp_end'         => '</div>',
+                    'post_html'       => '<a href="{url}" class="yarpp-thumbnail"><img src="{thumb_url}" width="360" height="188" alt="{text_title}" loading="lazy" /><div class="desc"><span>{text_title}</span></div></a>',
+                    'post_type'       => 'post',
+                    'limit'           => 6,
+                    'range'           => 'custom',
+                    'time_quantity'   => 3,
+                    'time_unit'       => 'day',
+                    'freshness'       => 0,
+                    'thumbnail_width' => 360,
+                    'thumbnail_height'=> 188,
+                );
+                wpp_get_mostpopular( $args );
+            }
             ?>
         </div>
     </div>
     <div class="custom-related-posts clearfix">
-        <?php yarpp_related(); ?>
+        <?php
+        if ( function_exists( 'yarpp_related' ) ) {
+            yarpp_related();
+        }
+        ?>
     </div>
     <?php
 }
 
 // Hook after post widget after the entry content.
-function mpp_after_entry() {
+function reban_mpp_after_entry() {
     genesis_widget_area(
         'after-entry',
         array(

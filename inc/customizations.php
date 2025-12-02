@@ -26,7 +26,7 @@ add_filter( 'genesis_seo_title', 'reban_site_title_with_logo', 10, 3 );
  * @return string
  */
 function reban_site_title_with_logo( $title, $inside, $wrap ) {
-    list( $logo_src, $width, $height ) = reban_perf_get_logo_asset();
+    [ $logo_src, $width, $height ] = reban_perf_get_logo_asset();
 
     if ( ! $logo_src ) {
         return $title;
@@ -287,7 +287,7 @@ function reban_custom_search_text( $text ) {
     2 - Hide Instagram Captions
 */
 // 1 - Youtube Videos remove show info related etc
-function custom_youtube_settings( $html, $url = '', $attr = array(), $post_id = 0 ) {
+function reban_youtube_settings( $html, $url = '', $attr = array(), $post_id = 0 ) {
     $haystack = $url ? $url : $html;
 
     if ( false === stripos( $haystack, 'youtube.com' ) && false === stripos( $haystack, 'youtu.be' ) ) {
@@ -384,10 +384,10 @@ function custom_youtube_settings( $html, $url = '', $attr = array(), $post_id = 
 
     return wp_kses( $sanitized_html ? $sanitized_html : $html, $allowed );
 }
-add_filter( 'embed_handler_html', 'custom_youtube_settings', 10, 4 );
-add_filter( 'embed_oembed_html', 'custom_youtube_settings', 10, 4 );
+add_filter( 'embed_handler_html', 'reban_youtube_settings', 10, 4 );
+add_filter( 'embed_oembed_html', 'reban_youtube_settings', 10, 4 );
 // 2 - Hide Instagram Captions
-function custom_instagram_settings( $code ) {
+function reban_instagram_settings( $code ) {
     if ( strpos( $code, 'instagr.am' ) !== false || strpos( $code, 'instagram.com' ) !== false ) { // if instagram embed
         $code = preg_replace( "@data-instgrm-captioned@", '', $code ); // remove caption class
 
@@ -433,8 +433,8 @@ function custom_instagram_settings( $code ) {
     }
     return $code;
 }
-add_filter( 'embed_handler_html', 'custom_instagram_settings' );
-add_filter( 'embed_oembed_html', 'custom_instagram_settings' );
+add_filter( 'embed_handler_html', 'reban_instagram_settings' );
+add_filter( 'embed_oembed_html', 'reban_instagram_settings' );
 
 // -----------------------------------------------------------------------------
 // Footer.
@@ -466,8 +466,8 @@ function reban_register_menus() {
 }
 
 remove_action( 'genesis_footer', 'genesis_do_footer' );
-add_action( 'genesis_footer', 'genesis_user_footer' );
-function genesis_user_footer() {
+add_action( 'genesis_footer', 'reban_user_footer' );
+function reban_user_footer() {
     ?>
     <div id="footer-menu">
         <?php

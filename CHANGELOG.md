@@ -2,6 +2,23 @@
 
 Notas resumidas por semana.
 
+## Semana 25.12.36-09
+
+- CSS crítico: se purgan los tokens/iconos duplicados en critical-*.css porque ahora se inyectan desde `css/design-tokens.css` en `wp_head`.
+
+## Semana 25.12.35-02
+
+- Seguridad: functions.php valida Genesis activo y solo incluye sidebar-offcanvas.php si el archivo existe.
+- Sidebar: funciones offcanvas prefijadas con `reban_` y guardadas tras verificar `genesis_register_sidebar`.
+- YARPP: la plantilla usa src/srcset nativo y elimina el helper `my_resize`.
+- Accesibilidad: `.credit-wrapper` deja de estar oculto para que los créditos sean visibles/alcanzables.
+- CI: se añade workflow de GitHub Actions para ejecutar PHPCS en push y PR.
+
+## Semana 25.12.34-03
+
+- CSS: se extraen tokens/icomoon/motion a `css/design-tokens.css` (versionado con filemtime) y `style.css` depende de ese handle.
+- Critical CSS: `reban_perf_get_critical_css` preprende el bloque de tokens y purga duplicados/resets antes de minificar, incluyendo el critical de single.
+
 ## Semana 25.12.33-30
 
 - Home: se alinean las tarjetas al inicio (sin centrado vertical) para eliminar espacios raros entre filas/columnas.
@@ -32,6 +49,13 @@ Notas resumidas por semana.
 - Sanitizado general (footer, author box, embeds), PHPCS y prefijo reban documentado.
 - Accesibilidad: textos de busqueda, focus visible, line-height global y tokens de color/spacing.
 - Breakpoints y critical CSS alineados, con bloque para paginas estaticas.
+
+## Semana 25.12.26-30
+
+- Critical CSS cacheado en transients por filemtime para evitar lecturas en cada request y mantener busting.
+- Plantilla YARPP evita resizes on-the-fly y valida rutas locales antes de leer dimensiones.
+- Toggles off-canvas ahora usan `<button>` accesible y estilos móviles actualizados.
+- Billboard reserva altura responsive (desktop/móvil) para evitar CLS y sigue colapsando cuando el slot viene vacío.
 
 ## Semana 25.12.19-15
 
