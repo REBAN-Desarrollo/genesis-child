@@ -26,32 +26,7 @@ add_filter( 'genesis_seo_title', 'reban_site_title_with_logo', 10, 3 );
  * @return string
  */
 function reban_site_title_with_logo( $title, $inside, $wrap ) {
-    $logo_src = '';
-    $width    = 0;
-    $height   = 0;
-
-    if ( has_custom_logo() ) {
-        $custom_logo_id = get_theme_mod( 'custom_logo' );
-        $custom_logo    = $custom_logo_id ? wp_get_attachment_image_src( $custom_logo_id, 'full' ) : false;
-        if ( $custom_logo ) {
-            list( $logo_src, $width, $height ) = $custom_logo;
-        }
-    } elseif ( get_header_image() ) {
-        $header   = get_custom_header();
-        $logo_src = get_header_image();
-        $width    = $header ? (int) $header->width : 0;
-        $height   = $header ? (int) $header->height : 0;
-    } else {
-        $fallback_path = get_stylesheet_directory() . '/images/Logo-OK-footer-blanco.png';
-        $logo_src      = get_stylesheet_directory_uri() . '/images/Logo-OK-footer-blanco.png';
-        if ( file_exists( $fallback_path ) ) {
-            $logo_src = add_query_arg( 'v', filemtime( $fallback_path ), $logo_src );
-        } else {
-            $logo_src = '/wp-content/themes/genesis-child/images/Logo-OK-footer-blanco.png';
-        }
-        $width  = 287;
-        $height = 110;
-    }
+    list( $logo_src, $width, $height ) = reban_perf_get_logo_asset();
 
     if ( ! $logo_src ) {
         return $title;
@@ -73,6 +48,61 @@ function reban_site_title_with_logo( $title, $inside, $wrap ) {
         $dimensions,
         $alt
     );
+}
+
+// -----------------------------------------------------------------------------
+// Header image CSS cleanup (evita fondo duplicado).
+// -----------------------------------------------------------------------------
+
+add_action( 'init', 'reban_disable_header_background_css', 1 );
+/**
+ * Evita que el header image se pinte como background (ya renderizamos <img>).
+ *
+ * - Quita el CSS inline por defecto (`_custom_header_css`) que fuerza background.
+ * - Quita el CSS inline de Genesis para header image (`genesis_custom_header_style`).
+ * - Remueve las clases `header-image/custom-header` para que el CSS base no aplique fondo.
+ */
+function reban_disable_header_background_css() {
+    if ( function_exists( '_custom_header_css' ) ) {
+        remove_action( 'wp_head', '_custom_header_css' );
+    }
+
+    if ( function_exists( 'genesis_custom_header_style' ) ) {
+        remove_action( 'wp_head', 'genesis_custom_header_style' );
+    }
+
+    add_filter(
+        'body_class',
+        function ( $classes ) {
+            return array_values(
+                array_diff( $classes, array( 'header-image', 'custom-header' ) )
+            );
+        }
+    );
+}
+
+/**
+ * Si hay custom logo, desactiva el header image para evitar pedir dos logos (custom logo + header CSS).
+ */
+add_action( 'wp', 'reban_disable_header_image_when_logo' );
+function reban_disable_header_image_when_logo() {
+    if ( ! has_custom_logo() ) {
+        return;
+    }
+
+    add_filter( 'theme_mod_header_image', '__return_empty_string' );
+    add_filter(
+        'body_class',
+        function ( $classes ) {
+            return array_values(
+                array_diff( $classes, array( 'header-image', 'custom-header' ) )
+            );
+        }
+    );
+
+    if ( function_exists( '_custom_header_css' ) ) {
+        remove_action( 'wp_head', '_custom_header_css' );
+    }
 }
 
 // -----------------------------------------------------------------------------
