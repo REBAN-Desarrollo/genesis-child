@@ -349,14 +349,48 @@ function reban_perf_async_js( $tag, $handle, $src ) {
     return $tag;
 }
 
-// Defer WordPress Popular Posts tracker to avoid render blocking while keeping order.
-add_action( 'wp_enqueue_scripts', 'reban_perf_defer_wpp', 20 );
-function reban_perf_defer_wpp() {
-    if ( ! wp_script_is( 'wpp-js', 'registered' ) && ! wp_script_is( 'wpp-js', 'enqueued' ) ) {
+// Keep WordPress Popular Posts tracker non-blocking even when it registers late.
+add_action( 'wp_enqueue_scripts', 'reban_perf_prepare_wpp_tracker', 15 );
+function reban_perf_prepare_wpp_tracker() {
+    if ( is_admin() ) {
         return;
     }
 
-    wp_script_add_data( 'wpp-js', 'strategy', 'defer' );
+    global $post;
+
+    $needs_wpp = is_singular( 'post' );
+
+    if ( $post && has_shortcode( $post->post_content, 'wpp' ) ) {
+        $needs_wpp = true;
+    }
+
+    if ( ! $needs_wpp ) {
+        return;
+    }
+
+    if ( wp_script_is( 'wpp-js', 'registered' ) && ! wp_script_is( 'wpp-js', 'enqueued' ) ) {
+        wp_enqueue_script( 'wpp-js' );
+    }
+
+    if ( wp_script_is( 'wpp-js', 'registered' ) || wp_script_is( 'wpp-js', 'enqueued' ) ) {
+        wp_script_add_data( 'wpp-js', 'strategy', 'defer' );
+    }
+}
+
+// Fallback: enforce defer on the final tag when strategies are stripped.
+add_filter( 'script_loader_tag', 'reban_perf_force_wpp_defer', 10, 3 );
+function reban_perf_force_wpp_defer( $tag, $handle, $src ) {
+    $is_wpp = ( 'wpp-js' === $handle ) || ( $src && false !== strpos( $src, '/wordpress-popular-posts/' ) );
+
+    if ( ! $is_wpp ) {
+        return $tag;
+    }
+
+    if ( stripos( $tag, 'defer' ) !== false || stripos( $tag, 'async' ) !== false ) {
+        return $tag;
+    }
+
+    return preg_replace( '/<script\\s+/i', '<script defer ', $tag, 1 );
 }
 
 // Add missing width/height to inline images so the browser can reserve space and avoid CLS.

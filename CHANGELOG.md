@@ -5,7 +5,7 @@ Notas resumidas por semana.
 ## Semana 25.12.33-30
 
 - Home: se alinean las tarjetas al inicio (sin centrado vertical) para eliminar espacios raros entre filas/columnas.
-- WPP: se eliminan preload/defer/auto-enqueue del script; solo queda el bloque de tendencias en single.
+- WPP: el tracker se auto-encola en singles/bloques y se fuerza defer (con fallback en script_loader_tag) para evitar bloqueo aunque se registre tarde.
 - Home: se restaura el layout flex de las tarjetas (imagen a la izquierda/titulo a la derecha en alternancia) en home y archivos tras limpiar el critical CSS.
 - Header: se desactiva el CSS inline/background del header image para que el logo solo se pinte vía <img> (sin duplicados).
 - Logo: preload y render comparten helper versionado/WebP para que la URL sea única (sin doble descarga).
