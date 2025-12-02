@@ -4,10 +4,9 @@ Notas resumidas por semana.
 
 ## Semana 25.12.33-30
 
-- WPP: defer reforzado por handle (`wpp-js`) y data `defer` para sobrevivir a rewrites/CDN que cambien la URL.
+- Home: se alinean las tarjetas al inicio (sin centrado vertical) para eliminar espacios raros entre filas/columnas.
+- WPP: se eliminan preload/defer/auto-enqueue del script; solo queda el bloque de tendencias en single.
 - Home: se restaura el layout flex de las tarjetas (imagen a la izquierda/titulo a la derecha en alternancia) en home y archivos tras limpiar el critical CSS.
-- WPP: preload del script `wpp-js` con la misma URL/version que el enqueue para acortar la cadena critica sin descargas dobles.
-- WPP: preload busca la ruta del plugin aunque cambie el handle para que el link se imprima cuando el script esta en cola.
 - Header: se desactiva el CSS inline/background del header image para que el logo solo se pinte vía <img> (sin duplicados).
 - Logo: preload y render comparten helper versionado/WebP para que la URL sea única (sin doble descarga).
 - Header: altura del logo ajustada a 4rem (40px) para mantener proporción en el header.
@@ -16,12 +15,11 @@ Notas resumidas por semana.
 - CSS/JS: critical-* se imprimen en plantillas con filemtime y versionado consistente; preloads sanos.
 - Seguridad: esc_url en preloads y sanitizado de embeds (YouTube/Instagram).
 - Fuentes: URLs absolutas/versionadas en critical CSS inyectado para eliminar 404 de fonts en rutas de pagina.
-- WPP: ya no se descola; `wpp-js` queda disponible en todas las plantillas y se marca con `defer` via filtro.
-- Perf/WPP: filtro `script_loader_tag` ahora en prioridad máxima (`PHP_INT_MAX`) y reemplazo directo antes de `src=` para que `defer` sobreviva a minificadores/rewrites; además se añade `strategy => defer` via `wp_script_add_data` (WP 6.3+).
 - CLS: bloque inline de toggles minificado para reservar espacio sin overhead en head.
 - Critical CSS: home/page/single actualizados con nuevos tokens y layout base ligero.
 - Logo: preload ahora detecta variante WebP local/versionada y la usa para evitar doble descarga cuando el HTML pinta otro formato.
 - Logo/header: si hay custom logo se desactiva el header image y su CSS inline para que no se duplique el asset (png/webp) por background + markup.
+- WPP: el script wpp-js se marca con strategy defer para que no bloquee el render.
 
 ## Semana 25.12.29-25
 

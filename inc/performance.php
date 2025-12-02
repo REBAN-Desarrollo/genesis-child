@@ -266,55 +266,6 @@ function reban_perf_version_logo_markup( $html ) {
     return $html;
 }
 
-/**
- * Get the final URL for a script handle, including versioning, to reuse in preloads.
- *
- * Mirrors core resolution so the preload URL matches the rendered <script> tag and avoids double downloads.
- *
- * @param string $handle Script handle to resolve.
- *
- * @return string URL or empty string when the handle is unknown.
- */
-function reban_perf_get_script_url( $handle ) {
-    if ( ! $handle ) {
-        return '';
-    }
-
-    $scripts = wp_scripts();
-
-    if ( ! $scripts || empty( $scripts->registered[ $handle ] ) ) {
-        return '';
-    }
-
-    $script = $scripts->registered[ $handle ];
-
-    if ( empty( $script->src ) ) {
-        return '';
-    }
-
-    $src = $script->src;
-
-    if ( 0 === strpos( $src, '//' ) ) {
-        $src = ( is_ssl() ? 'https:' : 'http:' ) . $src;
-    } elseif ( 0 === strpos( $src, '/' ) ) {
-        $src = home_url( $src );
-    } elseif ( ! preg_match( '#^https?://#i', $src ) ) {
-        $src = $scripts->base_url . $src;
-    }
-
-    $ver = $script->ver;
-
-    if ( null === $ver ) {
-        $ver = $scripts->default_version;
-    }
-
-    if ( false !== $ver && '' !== $ver ) {
-        $src = add_query_arg( 'ver', $ver, $src );
-    }
-
-    return apply_filters( 'script_loader_src', $src, $handle );
-}
-
 /* Headers mods
  * 1 - preconnect / dns preload / preload archivos que se usaran
  *      1.a - Preload: https://web.dev/preload-critical-assets/
@@ -331,28 +282,6 @@ function reban_perf_preloads() {
         'poppins_woff2' => reban_perf_versioned_asset( '/fonts/Poppins-SemiBold.woff2' ),
         'proxima_woff2' => reban_perf_versioned_asset( '/fonts/ProximaNova-Regular.woff2' ),
     );
-
-    // Preload WPP when enqueued (or when the handle is renamed but lives in the plugin path).
-    $wpp_src = reban_perf_get_script_url( 'wpp-js' );
-
-    if ( ! $wpp_src ) {
-        $scripts = wp_scripts();
-
-        if ( $scripts && ! empty( $scripts->queue ) ) {
-            foreach ( $scripts->queue as $queued_handle ) {
-                if ( empty( $scripts->registered[ $queued_handle ] ) ) {
-                    continue;
-                }
-
-                $queued_src = $scripts->registered[ $queued_handle ]->src;
-
-                if ( $queued_src && false !== strpos( $queued_src, 'wordpress-popular-posts/assets/js/' ) ) {
-                    $wpp_src = reban_perf_get_script_url( $queued_handle );
-                    break;
-                }
-            }
-        }
-    }
     ?>
         <?php if ( $logo_src ) : ?>
             <link rel="preload" href="<?php echo esc_url( $logo_src ); ?>" as="image"<?php echo $logo_width && $logo_height ? ' width="' . esc_attr( $logo_width ) . '" height="' . esc_attr( $logo_height ) . '"' : ''; ?>>
@@ -360,9 +289,6 @@ function reban_perf_preloads() {
         <link rel="preload" href="<?php echo esc_url( $preloads['reban_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
         <link rel="preload" href="<?php echo esc_url( $preloads['poppins_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
         <link rel="preload" href="<?php echo esc_url( $preloads['proxima_woff2'] ); ?>" as="font" type="font/woff2" crossorigin="anonymous">
-        <?php if ( $wpp_src ) : ?>
-            <link rel="preload" href="<?php echo esc_url( $wpp_src ); ?>" as="script">
-        <?php endif; ?>
         
         <style id="sidebar-toggle-cls-fix">@media (max-width:944px){.site-header .wrap{position:relative}.site-header .wrap>a.sidebar-toggle-left,.site-header .wrap>a.sidebar-toggle-right{display:inline-flex;align-items:center;justify-content:center;width:3.6rem;height:3.6rem;padding:.5rem;position:absolute;top:50%;transform:translateY(-50%);line-height:1}.site-header .wrap>a.sidebar-toggle-left{left:1rem}.site-header .wrap>a.sidebar-toggle-right{right:.1rem}.nav-primary .menu li.mobile-item>a.sidebar-toggle-left{display:inline-flex;align-items:center;justify-content:center;width:3.6rem;height:3.6rem;padding:.5rem}}.sidebar-toggle-left .icon-menu,.sidebar-toggle-right .icon-menu{display:block;line-height:1;width:1em;height:1em}</style>
     <?php
@@ -411,42 +337,26 @@ function reban_perf_async_css( $html, $handle ) {
     return $html;
 }
 
-// Usa la API nativa de WordPress 6.3+ para marcar WPP como defer sin moverlo al footer.
-add_action( 'wp_enqueue_scripts', 'reban_perf_defer_wpp_strategy', 15 );
-function reban_perf_defer_wpp_strategy() {
-    if ( wp_script_is( 'wpp-js', 'registered' ) ) {
-        wp_script_add_data( 'wpp-js', 'strategy', 'defer' );
-        wp_script_add_data( 'wpp-js', 'defer', true ); // Fallback para versiones sin strategy.
-    }
-}
-
 /** Add async attributes to enqueued scripts where needed.The ability to filter script tags was added in WordPress 4.1 for this purpose. */
 add_filter( 'script_loader_tag', 'reban_perf_async_js', PHP_INT_MAX, 3 );
 function reban_perf_async_js( $tag, $handle, $src ) {
     // the handles of the enqueued scripts we want to async.
     $async_scripts = array( CHILD_THEME_NAME );
 
-    $is_wpp_js = ( $handle === 'wpp-js' || strpos( $src, '/wpp.min.js' ) !== false || strpos( $src, '/wpp.js' ) !== false );
-
-    if ( $is_wpp_js ) {
-        // Defer WPP per plugin author's guidance to avoid blocking render while keeping execution order.
-        if ( false !== stripos( $tag, 'defer' ) || false !== stripos( $tag, 'async' ) ) {
-            return $tag;
-        }
-
-        // Preserve plugin attributes (id/data-*) and only append defer.
-        if ( preg_match( '/<script\\s+/i', $tag ) ) {
-            $tag = preg_replace( '/<script\\s+/i', '<script defer ', $tag, 1 );
-        } elseif ( $src ) {
-            $tag = '<script defer type="text/javascript" src="' . esc_url( $src ) . '"></script>' . "\n";
-        }
-        return $tag;
-    }
-
     if ( in_array( $handle, $async_scripts, true ) ) {
         return '<script type="text/javascript" async src="' . esc_url( $src ) . '"></script>' . "\n";
     }
     return $tag;
+}
+
+// Defer WordPress Popular Posts tracker to avoid render blocking while keeping order.
+add_action( 'wp_enqueue_scripts', 'reban_perf_defer_wpp', 20 );
+function reban_perf_defer_wpp() {
+    if ( ! wp_script_is( 'wpp-js', 'registered' ) && ! wp_script_is( 'wpp-js', 'enqueued' ) ) {
+        return;
+    }
+
+    wp_script_add_data( 'wpp-js', 'strategy', 'defer' );
 }
 
 // Add missing width/height to inline images so the browser can reserve space and avoid CLS.

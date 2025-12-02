@@ -24,7 +24,7 @@
 
 .oc-card__inner,
 .full-post-container {
-    align-items: center;
+    align-items: flex-start;
     display: flex;
     gap: 2rem;
 }
