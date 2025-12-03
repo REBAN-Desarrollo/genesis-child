@@ -1,0 +1,7 @@
+---
+description: "Git guardrails"
+alwaysApply: true
+---
+
+- No ejecutes comandos git (commit/push/branch/merge/rebase) sin instruccion explicita del usuario.
+- Si se necesita un comando git, sugiere el comando para que el usuario lo ejecute.

@@ -2,6 +2,10 @@
 
 Notas resumidas por semana.
 
+## Semana 25.12.36-10
+
+- Documentacion: se reemplaza `agents.md` por `AGENTS.md` estructurado y se anaden `CLAUDE.md`, reglas de Cursor y `PROMPTS.md` para alinear a los agentes.
+
 ## Semana 25.12.36-09
 
 - CSS crítico: se purgan los tokens/iconos duplicados en critical-*.css porque ahora se inyectan desde `css/design-tokens.css` en `wp_head`.

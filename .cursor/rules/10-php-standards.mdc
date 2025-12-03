@@ -1,0 +1,10 @@
+---
+description: "PHP standards for genesis-child"
+globs: ["**/*.php"]
+alwaysApply: false
+---
+
+- Usa el estandar WordPress definido en `phpcs.xml.dist` (`composer run lint:php`).
+- Prefija funciones/hooks con `reban_` y reutiliza hooks/helpers existentes antes de agregar nuevos.
+- Manten el versionado por `filemtime` en `wp_enqueue_scripts` y evita dependencias externas sin justificacion.
+- Sanitiza/escapa salida y evita queries SQL directas; usa APIs de WordPress/Genesis.
