@@ -1493,6 +1493,14 @@ Footer Widgets
 .single-post .header-box .full-img,
 .oc-article-header__media {
 	min-height: 18.8rem;
+	aspect-ratio: 16 / 9; /* Fallback para evitar CLS - se sobreescribe si hay inline style */
+	contain: layout;
+}
+/* Asegurar que la imagen respete el espacio reservado */
+.oc-article-header__media img.aligncenter {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
 }
 .single-post-category,
 .oc-article-header__category{
